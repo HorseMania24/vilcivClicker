@@ -1,0 +1,119 @@
+body {
+padding:0px;
+margin: 0px;
+background: #cac6cb;
+background-size: cover;
+background-repeat: no-repeat;
+}
+
+@font-face {
+font-family: win95;
+src: url(fonts/win95.ttf);
+}
+.menuContainer {
+width: 100%;
+height: 30%;
+padding:0px;
+margin: auto;
+background: #cac6cb;
+box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
+position: absolute;
+bottom: 0px;
+display: flex;
+flex-wrap: nowrap;
+}
+
+.buttonContainer {
+width: 20%;
+height: 90%;
+margin: auto;
+background: #cac6cb;
+box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
+display: flex;
+flex-wrap: nowrap;
+flex-direction: column;
+}
+
+.menuButton {
+width: 90%;
+height: 25%;
+margin: auto;
+text-align: center;
+box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
+background: #cac6cb;
+border-radius: 5px;
+}
+
+.menuButton:Hover {
+cursor: pointer;
+background: #bcb9bd;
+}
+
+.menuButton:active {
+box-shadow: inset -2px -2px 0 0 white, inset 2px 2px 0 0 #a099a1;
+}
+
+.clicker {
+position: relative;
+top: 5%;
+width: 20vw;
+height: 20vw;
+border-radius: 50%;
+border: 0.25vw solid black
+}
+
+.clicker:hover {
+cursor: pointer;
+}
+
+.clickerContainer {
+width: 37.5%;
+height: 65%;
+background: #cac6cb;
+position: absolute;
+left: 1.5%;
+top: 2.5%;
+text-align: center;
+box-shadow: inset -2px -2px 0 0 white, inset 2px 2px 0 0 #a099a1;
+}
+
+.infoContainer {
+width: 100%;
+height: 20%;
+background: transparent;
+position:absolute;
+bottom:0;
+display: flex;
+flex-wrap: nowrap;
+}
+
+.infoTextContainer {
+width: 50%;
+height: 90%;
+display: flex;
+flex-wrap: nowrap;
+flex-direction: column;
+text-align: left;
+}
+
+.infoText {
+resize: none;
+font-size: 90%;
+font-family: Tahoma, Helvetica, Arial, sans-serif;margin-top: auto;
+margin-bottom: auto;
+margin-left: 5px;
+}
+
+.gatherInfo {
+margin: 8% auto auto auto;
+text-align: center;
+}
+
+#gameCanvas {
+width: 59%;
+height: 70%;
+position: absolute;
+top: 0px;
+right: 0%;
+background-color: white;
+}

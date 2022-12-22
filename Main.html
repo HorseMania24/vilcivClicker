@@ -1,0 +1,53 @@
+<head>
+	<link rel="stylesheet" href="styles.css">
+	<title>Bob's CLicker</title>
+</head>
+
+<body>
+	<div class="clickerContainer">
+		<button class="clicker" onclick="resourceClicker()"></button>
+		<p class="gatherInfo">Currently Gathering: <span id="currentResource">Wood</span></p>
+		<div class="infoContainer">
+			<div class="infoTextContainer">
+				<p class="infoText">Wood : <span id="wood">0</span></p>
+				<p class="infoText">Coal : <span id="coal">0</span></p>
+				<p class="infoText">Lumber : <span id="lumber">0</span></p>
+			</div>
+		<div class="infoTextContainer"></div>
+
+		</div>
+		</div>
+	</div>
+	
+	<canvas id="gameCanvas"></canvas>
+	
+	<div class="menuContainer">
+		<div class="">
+		
+		</div>
+		
+		<div class="buttonContainer">
+			<button class="menuButton" onclick="buyTent()"><span>Buy a tent!</span></button>
+			<button class="menuButton" onclick="buyTent()"><span>Buy a tent!</span></button>
+			<button class="menuButton" onclick="switchResource()"><span>Switch Resource</span></button>
+		</div>
+		<div class="buttonContainer">
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+		</div>
+		<div class="buttonContainer">
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+		</div>
+		<div class="buttonContainer">
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+			<div class="menuButton"></div>
+		</div>
+	</div>
+	
+	<script src="game.js"></script>
+	
+</body>
