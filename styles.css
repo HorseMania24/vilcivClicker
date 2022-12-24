@@ -1,119 +1,271 @@
 body {
-padding:0px;
-margin: 0px;
-background: #cac6cb;
-background-size: cover;
-background-repeat: no-repeat;
+    padding:0px;
+    margin: 0px;
+    background: #c3c7cb;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-@font-face {
-font-family: win95;
-src: url(fonts/win95.ttf);
+::-webkit-scrollbar {
+    width: 0.75vw;
 }
+
+::-webkit-scrollbar-thumb {
+
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+}
+
+::-webkit-scrollbar-track {
+    background: grey;
+}
+
+
+
+
+@font-face {
+    font-family: win95;
+    src: url(fonts/win95.ttf);
+}
+
 .menuContainer {
-width: 100%;
-height: 30%;
-padding:0px;
-margin: auto;
-background: #cac6cb;
-box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
-position: absolute;
-bottom: 0px;
-display: flex;
-flex-wrap: nowrap;
+    width: 100%;
+    height: 30%;
+    padding:0px;
+    margin: auto;
+    background: #c3c7cb;
+    box-shadow: inset -0.15vw -0.15vw 0 0 #a099a1, inset 0.15vw 0.15vw 0 0 white;
+    position: absolute;
+    bottom: 0%;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .buttonContainer {
-width: 20%;
-height: 90%;
-margin: auto;
-background: #cac6cb;
-box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
-display: flex;
-flex-wrap: nowrap;
-flex-direction: column;
+    width: 20%;
+    height: 90%;
+    margin: auto;
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
 }
 
 .menuButton {
-width: 90%;
-height: 25%;
-margin: auto;
-text-align: center;
-box-shadow: inset -2px -2px 0 0 #a099a1, inset 2px 2px 0 0 white;
-background: #cac6cb;
-border-radius: 5px;
+    width: 90%;
+    height: 25%;
+    margin: auto;
+    text-align: left;
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+    border-radius: 0.35vw;
 }
 
 .menuButton:Hover {
-cursor: pointer;
-background: #bcb9bd;
+    cursor: pointer;
+    background: #bcb9bd;
 }
 
 .menuButton:active {
-box-shadow: inset -2px -2px 0 0 white, inset 2px 2px 0 0 #a099a1;
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
+}
+
+.menuButtonText {
+    font-size: 1.1vw;
+    margin: auto;
 }
 
 .clicker {
-position: relative;
-top: 5%;
-width: 20vw;
-height: 20vw;
-border-radius: 50%;
-border: 0.25vw solid black
+    position: relative;
+    top: 5%;
+    width: 20vw;
+    height: 20vw;
+    border-radius: 50%;
+    border: transparent;
+    background: red;
+
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid #a099a1;
+    border-right: 0.15vw solid #a099a1;
+    
+    transition: 0.1s;
+    transform: scale(1);
 }
 
 .clicker:hover {
-cursor: pointer;
+    cursor: pointer;
+}
+
+.clicker:active {
+    border-top: 0.15vw solid #a099a1;
+    border-left: 0.15vw solid #a099a1;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
+    transition: 0.1s;
+    transform: scale(0.8);
 }
 
 .clickerContainer {
-width: 37.5%;
-height: 65%;
-background: #cac6cb;
-position: absolute;
-left: 1.5%;
-top: 2.5%;
-text-align: center;
-box-shadow: inset -2px -2px 0 0 white, inset 2px 2px 0 0 #a099a1;
+    margin: auto;
+    width: 37.5%;
+    height: 65%;
+    position: absolute;
+    left: 1.5%;
+    top: 2.5%;
+    text-align: center;
+    background: #c3c7cb;
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
 }
 
 .infoContainer {
-width: 100%;
-height: 20%;
-background: transparent;
-position:absolute;
-bottom:0;
-display: flex;
-flex-wrap: nowrap;
+    width: 100%;
+    height: 20%;
+    background: transparent;
+    position:absolute;
+    bottom:0;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .infoTextContainer {
-width: 50%;
-height: 90%;
-display: flex;
-flex-wrap: nowrap;
-flex-direction: column;
-text-align: left;
+    width: 50%;
+    height: 90%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    text-align: left;
+    
 }
 
 .infoText {
-resize: none;
-font-size: 90%;
-font-family: Tahoma, Helvetica, Arial, sans-serif;margin-top: auto;
-margin-bottom: auto;
-margin-left: 5px;
+    resize: none;
+    font-size: 1vw;
+    font-family: Tahoma, Helvetica, Arial, sans-serif;margin-top: auto;
+    margin-bottom: auto;
+    margin-top: auto;
+    margin-left: 0.5vw;
 }
 
 .gatherInfo {
-margin: 8% auto auto auto;
-text-align: center;
+    margin: 8% auto auto auto;
+    font-family: Tahoma, Helvetica, Arial, sans-serif;
+    text-align: center;
+    font-size: 1.1vw;
+}
+
+.shopInfo-Wrapper {
+    width: 15%;
+    height: 90%;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    background: transparent;
+    margin: auto;
+}
+
+.shopInfo {
+    margin: auto;
+    width: 98%;
+    height: 100%;
+    background: white;
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    overflow-y: auto;
+    word-break: break-all; 
+    font-size: 1vw;
+}
+
+.shopInfoOptions {
+    margin: auto;
+    width: 100%;
+    height: 10%;
+    background: transparent;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+}
+
+.musicButton {
+    width: 50%;
+    height: 100%;
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+
+
+}
+
+.musicButton:hover {
+    cursor: pointer;
+}
+
+.musicButton:active {
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
+}
+
+.keybindsButton {
+    width: 50%;
+    height: 100%;
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+}
+
+.keybindsButton:hover {
+    cursor: pointer;
+}
+
+.keybindsButton:active {
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
 }
 
 #gameCanvas {
-width: 59%;
-height: 70%;
-position: absolute;
-top: 0px;
-right: 0%;
-background-color: white;
+    width: 59%;
+    height: 70%;
+    position: absolute;
+    top: 0px;
+    right: 0%;
+    background-color: black;
 }
