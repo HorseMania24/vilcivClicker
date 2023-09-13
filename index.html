@@ -3,79 +3,62 @@
 	<title>Bob's CLicker</title>
 </head>
 
-<body>    
+<body>   
+	
+	<div class="Window95Style" id="KeybindsWindow">
+		<div class="WindowBar">
+			<p style="margin: 0;">Configure Keybinds</p>
+			<button class="Button95Style CloseButton" onclick="CloseWindow('KeybindsWindow')">X</button>
+		</div>
+	</div>
+	
 	<div class="clickerContainer">
 		<button class="clicker" onclick="resourceClicker()"></button>
 		<p class="gatherInfo">Currently Gathering: <span id="currentResource">Wood</span></p>
-
-		<div class="infoContainer">
-			<div class="infoTextContainer">
-				<p class="infoText">Wood : <span id="wood">0</span></p>
-				<p class="infoText">Coal : <span id="coal">0</span></p>
-				<p class="infoText">Lumber : <span id="lumber">0</span></p>
-			</div>
-        <div class="infoTextContainer"></div>
-
 		</div>
     </div>
 	
 	<canvas id="gameCanvas"></canvas>
 	
-	<div class="menuContainer">
-        
-        <div class="shopInfo-Wrapper">
-                <div class="shopInfoOptions">
-                    <button class="musicButton" onclick="MusicManager()">Music</button>
-                    <button class="keybindsButton"></button>
+	<div class="menuContainer"> 
+        <div class="menuWrapper">
+                <div class="menuOptions">
+                    <button class="Button95Style" id="musicButton" onclick="MusicManager()">Music: Off</button>
+                    <button class="Button95Style" id="keybindsButton" onclick="OpenWindow('KeybindsWindow')">asdasd</button>
                 </div>
 
-                <div class="shopInfo">
-                    <p>asdasdasdasasdasdasd</p>
-                    <p>asdasdasdas: 2732837239078</p>
-                    <p>asdasdasdasasdasdadadasdasdasdadasdsadasdasdasdasda</p>
-                    <p>asdasdasdasfgjhfghjfgjhfghjfjhfhfgjdfghdfghdgfhdfgh: 2424</p>
-                    <p>asdasdasdas</p>
-                    <p>asdasdasdas</p>
-                    <p>asdasdasdas</p>
-                    <p>asdasdasdas</p>
-                    <p>asdasdasdas</p>
-                    <p>asdasdasdas</p>
+                <div class="menuInfo">
+					<p class="infoText">Wood : <span id="Wood">0</span></p>
+					<p class="infoText">Coal : <span id="Coal">0</span></p>
+					<p class="infoText">Lumber : <span id="Lumber">0</span></p>
                 </div>
         </div>
 		
-		<div class="buttonContainer">
-			<button class="menuButton" onclick="buyTent()"><p class="menuButtonText">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span> </p>
-            </button>
-
-			<button class="menuButton" onclick="buyTent()"><p class="menuButtonText">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span> </p>
-            </button>
-
-			<button class="menuButton" onclick="buyTent()"><p class="menuButtonText">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span> </p>
-            </button>
+		<div class="Window95Style buttonContainer">
+			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
+			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
+			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
 		</div>
 
-		<div class="buttonContainer">
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
+		<div class="Window95Style buttonContainer">
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
 		</div>
 
-		<div class="buttonContainer">
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
+		<div class="Window95Style buttonContainer">
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
 		</div>
 
-		<div class="buttonContainer">
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
-			<div class="menuButton"></div>
+		<div class="Window95Style buttonContainer">
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
+			<div class="Button95Style menuButton"></div>
 		</div>
 
-	</div>
-
-    
-    
+	</div> 
 	<script src="game.js"></script>
 	
 </body>

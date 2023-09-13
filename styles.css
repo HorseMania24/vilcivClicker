@@ -4,6 +4,7 @@ body {
     background: #c3c7cb;
     background-size: cover;
     background-repeat: no-repeat;
+    font-family: Tahoma, Helvetica, Arial, sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -24,12 +25,36 @@ body {
     background: grey;
 }
 
+.Button95Style {
+    margin: auto;
+    text-align: center;
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
+}
 
+.Button95Style:active {
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid white;
+    border-right: 0.15vw solid white;
+}
 
+.Button95Style:hover {
+    cursor: pointer;
+}
 
-@font-face {
-    font-family: win95;
-    src: url(fonts/win95.ttf);
+.Window95Style {
+    background: #c3c7cb;
+    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid white;
+    border-left: 0.15vw solid white;
+    border-bottom: 0.15vw solid black;
+    border-right: 0.15vw solid black;
 }
 
 .menuContainer {
@@ -49,12 +74,6 @@ body {
     width: 20%;
     height: 90%;
     margin: auto;
-    background: #c3c7cb;
-    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid white;
-    border-left: 0.15vw solid white;
-    border-bottom: 0.15vw solid black;
-    border-right: 0.15vw solid black;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
@@ -63,28 +82,6 @@ body {
 .menuButton {
     width: 90%;
     height: 25%;
-    margin: auto;
-    text-align: left;
-    background: #c3c7cb;
-    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid white;
-    border-left: 0.15vw solid white;
-    border-bottom: 0.15vw solid black;
-    border-right: 0.15vw solid black;
-    border-radius: 0.35vw;
-}
-
-.menuButton:Hover {
-    cursor: pointer;
-    background: #bcb9bd;
-}
-
-.menuButton:active {
-    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid black;
-    border-left: 0.15vw solid black;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
 }
 
 .menuButtonText {
@@ -93,19 +90,16 @@ body {
 }
 
 .clicker {
-    position: relative;
-    top: 5%;
     width: 20vw;
     height: 20vw;
     border-radius: 50%;
     border: transparent;
     background: red;
-
+    margin: 0;
     border-top: 0.15vw solid white;
     border-left: 0.15vw solid white;
     border-bottom: 0.15vw solid #a099a1;
     border-right: 0.15vw solid #a099a1;
-    
     transition: 0.1s;
     transform: scale(1);
 }
@@ -120,17 +114,21 @@ body {
     border-bottom: 0.15vw solid white;
     border-right: 0.15vw solid white;
     transition: 0.1s;
-    transform: scale(0.8);
+    transform: scale(0.95);
 }
 
 .clickerContainer {
-    margin: auto;
+    margin: 0 auto;
+    padding: 0 auto;
     width: 37.5%;
     height: 65%;
     position: absolute;
     left: 1.5%;
     top: 2.5%;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background: #c3c7cb;
     box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
     border-top: 0.15vw solid black;
@@ -139,43 +137,14 @@ body {
     border-right: 0.15vw solid white;
 }
 
-.infoContainer {
-    width: 100%;
-    height: 20%;
-    background: transparent;
-    position:absolute;
-    bottom:0;
-    display: flex;
-    flex-wrap: nowrap;
-}
-
-.infoTextContainer {
-    width: 50%;
-    height: 90%;
-    display: flex;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    text-align: left;
-    
-}
-
 .infoText {
     resize: none;
     font-size: 1vw;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;margin-top: auto;
-    margin-bottom: auto;
-    margin-top: auto;
-    margin-left: 0.5vw;
+    text-align: left;
+    margin: auto auto auto 0.25vw;
 }
 
-.gatherInfo {
-    margin: 8% auto auto auto;
-    font-family: Tahoma, Helvetica, Arial, sans-serif;
-    text-align: center;
-    font-size: 1.1vw;
-}
-
-.shopInfo-Wrapper {
+.menuWrapper {
     width: 15%;
     height: 90%;
     display: flex;
@@ -185,7 +154,7 @@ body {
     margin: auto;
 }
 
-.shopInfo {
+.menuInfo {
     margin: auto;
     width: 98%;
     height: 100%;
@@ -203,8 +172,9 @@ body {
     font-size: 1vw;
 }
 
-.shopInfoOptions {
-    margin: auto;
+.menuOptions {
+    margin: 0;
+    padding: 0;
     width: 100%;
     height: 10%;
     background: transparent;
@@ -213,52 +183,49 @@ body {
     flex-direction: row;
 }
 
-.musicButton {
+#musicButton {
     width: 50%;
     height: 100%;
-    background: #c3c7cb;
-    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid white;
-    border-left: 0.15vw solid white;
-    border-bottom: 0.15vw solid black;
-    border-right: 0.15vw solid black;
-
-
 }
 
-.musicButton:hover {
-    cursor: pointer;
-}
-
-.musicButton:active {
-    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid black;
-    border-left: 0.15vw solid black;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
-}
-
-.keybindsButton {
+#keybindsButton {
     width: 50%;
     height: 100%;
+}
+
+#KeybindsWindow {
+    aspect-ratio: 1.5 / 1;
+    height: 65%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    transform: translate(-50%, -50%);
+    align-items: center;
     background: #c3c7cb;
-    box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid white;
-    border-left: 0.15vw solid white;
-    border-bottom: 0.15vw solid black;
-    border-right: 0.15vw solid black;
+    border: #868a8e 0.2vw solid;
+    z-index: 1;
 }
 
-.keybindsButton:hover {
-    cursor: pointer;
+.WindowBar {
+    aspect-ratio: 1/ 0.03;
+    width: 98%;
+    margin: 0.25vw auto;
+    text-align: center;
+    color: white;
+    padding: 0.25vw;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(0, 38, 255);
 }
 
-.keybindsButton:active {
-    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid black;
-    border-left: 0.15vw solid black;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
+.CloseButton {
+    aspect-ratio: 1/1;
+    height: 100%;
+    position: sticky;
+    left: 100%;
+    text-align: center;
 }
 
 #gameCanvas {
