@@ -10,27 +10,34 @@
 			<p style="margin: 0;">Configure Keybinds</p>
 			<button class="Button95Style CloseButton" onclick="CloseWindow('KeybindsWindow')">X</button>
 		</div>
+		<div class="Window95Inset" id="KeybindsContainer">
+		</div>
 	</div>
 	
-	<div class="clickerContainer">
+	<div id="clickerContainer" class="Window95Inset">
 		<button class="clicker" onclick="resourceClicker()"></button>
-		<p class="gatherInfo">Currently Gathering: <span id="currentResource">Wood</span></p>
+		<p class="gatherInfo">Currently Gathering: <span id="CurrentResource">Wood</span></p>
+		<p class="gatherInfo">Efficiency Per Click: <span id="ResourceEfficiency">1</span></p>
 		</div>
     </div>
 	
-	<canvas id="gameCanvas"></canvas>
+	<canvas id="canvas"></canvas>
 	
 	<div class="menuContainer"> 
         <div class="menuWrapper">
                 <div class="menuOptions">
                     <button class="Button95Style" id="musicButton" onclick="MusicManager()">Music: Off</button>
-                    <button class="Button95Style" id="keybindsButton" onclick="OpenWindow('KeybindsWindow')">asdasd</button>
+                    <button class="Button95Style" id="keybindsButton" onclick="OpenWindow('KeybindsWindow', 'flex')">Keybinds</button>
                 </div>
 
-                <div class="menuInfo">
+                <div class="Window95Inset" id="menuInfo">
+					<p class="infoText">Rubles : <span id="Rubles">0</span></p>
 					<p class="infoText">Wood : <span id="Wood">0</span></p>
 					<p class="infoText">Coal : <span id="Coal">0</span></p>
 					<p class="infoText">Lumber : <span id="Lumber">0</span></p>
+					<p class="infoText">Total Residents : <span id="TotalPeople">0</span></p>
+					<p class="infoText">Lumber-Jacks : <span id="Lumber">0</span></p>
+					<p class="infoText">Coal-Miners : <span id="TotalPeople">0</span></p>
                 </div>
         </div>
 		
@@ -59,6 +66,5 @@
 		</div>
 
 	</div> 
-	<script src="game.js"></script>
-	
+	<script src="GameManager.js"></script>	
 </body>

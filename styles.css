@@ -28,6 +28,7 @@ body {
 .Button95Style {
     margin: auto;
     text-align: center;
+    align-content: center;
     background: #c3c7cb;
     box-shadow: -0.15vw -0.15vw 0.15vw inset #868a8e;
     border-top: 0.15vw solid white;
@@ -82,11 +83,7 @@ body {
 .menuButton {
     width: 90%;
     height: 25%;
-}
-
-.menuButtonText {
-    font-size: 1.1vw;
-    margin: auto;
+    font-size: 1.25vw;
 }
 
 .clicker {
@@ -96,10 +93,10 @@ body {
     border: transparent;
     background: red;
     margin: 0;
-    border-top: 0.15vw solid white;
-    border-left: 0.15vw solid white;
-    border-bottom: 0.15vw solid #a099a1;
-    border-right: 0.15vw solid #a099a1;
+    border-top: 0.3vw solid white;
+    border-left: 0.3vw solid white;
+    border-bottom: 0.3vw solid #a099a1;
+    border-right: 0.3vw solid #a099a1;
     transition: 0.1s;
     transform: scale(1);
 }
@@ -109,15 +106,15 @@ body {
 }
 
 .clicker:active {
-    border-top: 0.15vw solid #a099a1;
-    border-left: 0.15vw solid #a099a1;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
+    border-top: 0.35vw solid #a099a1;
+    border-left: 0.35vw solid #a099a1;
+    border-bottom: 0.35vw solid white;
+    border-right: 0.35vw solid white;
     transition: 0.1s;
     transform: scale(0.95);
 }
 
-.clickerContainer {
+#clickerContainer {
     margin: 0 auto;
     padding: 0 auto;
     width: 37.5%;
@@ -130,11 +127,6 @@ body {
     justify-content: center;
     align-items: center;
     background: #c3c7cb;
-    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid black;
-    border-left: 0.15vw solid black;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
 }
 
 .infoText {
@@ -154,21 +146,15 @@ body {
     margin: auto;
 }
 
-.menuInfo {
+#menuInfo {
     margin: auto;
     width: 98%;
     height: 100%;
-    background: white;
-    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
-    border-top: 0.15vw solid black;
-    border-left: 0.15vw solid black;
-    border-bottom: 0.15vw solid white;
-    border-right: 0.15vw solid white;
     display: flex;
     flex-wrap: nowrap;
     flex-direction: column;
     overflow-y: auto;
-    word-break: break-all; 
+    word-break: keep-all; 
     font-size: 1vw;
 }
 
@@ -186,11 +172,15 @@ body {
 #musicButton {
     width: 50%;
     height: 100%;
+    font-size: 1vw;
+    border-bottom: none;
 }
 
 #keybindsButton {
     width: 50%;
     height: 100%;
+    font-size: 1vw;
+    border-bottom: none;
 }
 
 #KeybindsWindow {
@@ -199,13 +189,22 @@ body {
     position: absolute;
     top: 50%;
     left: 50%;
-    display: flex;
+    display: none;
     flex-direction: column;
     transform: translate(-50%, -50%);
     align-items: center;
     background: #c3c7cb;
     border: #868a8e 0.2vw solid;
     z-index: 1;
+}
+
+#KeybindsContainer {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    text-align: center;
+    overflow-y: auto;
+    word-break: break-all; 
 }
 
 .WindowBar {
@@ -220,15 +219,82 @@ body {
     background-color: rgb(0, 38, 255);
 }
 
-.CloseButton {
-    aspect-ratio: 1/1;
-    height: 100%;
-    position: sticky;
-    left: 100%;
-    text-align: center;
+.WindowClosed {
+    transition: 0.5;
+    transform: scale(0);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-#gameCanvas {
+
+.Window95Inset {
+    width: 98%;
+    height: 89%;
+    background: white;
+    box-shadow: 0.15vw 0.15vw 0.15vw inset #868a8e;
+    border-top: 0.15vw solid black;
+    border-left: 0.15vw solid black;
+    border-bottom: 0.15vw solid rgb(209, 209, 209);
+    border-right: 0.15vw solid rgb(209, 209, 209);
+}
+
+.Window95DoubleInset {
+    background: rgb(219, 219, 219);
+}
+
+.KeybindActionText {
+    color: rgb(89, 0, 255);
+    font-weight:bolder;
+    font-style: oblique;
+    text-align: left;
+    margin: 0 0 0 1vw;
+    padding: 0;
+    word-break: keep-all; 
+}
+
+.KeybindActionDesc {
+    font-weight: normal;
+    font-style: normal;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 45%;
+    max-height: 100%;
+    overflow-x:visible;
+    word-break: keep-all; 
+}
+
+.KeybindButtonChange {
+    height: 90%;
+    width: 22.5%;
+    font-weight: bolder;
+    position: sticky;
+    left: 75.5%;
+}
+
+.ContentContainer {
+    margin: 0.75vw;
+    width: 96%;
+    height: 15%;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25vw;
+}
+
+
+.CloseButton {
+    aspect-ratio: 1/1;
+    margin: 0;
+    height: 100%;
+    margin-left: auto;
+    left: 0%;
+}
+
+#canvas {
     width: 59%;
     height: 70%;
     position: absolute;
