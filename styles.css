@@ -88,7 +88,6 @@ body {
 }
 
 #clicker {
-    width: 20vw;
     height: 20vw;
     border-radius: 50%;
     border: transparent;
@@ -99,6 +98,7 @@ body {
     border-bottom: 0.3vw solid #a099a1;
     border-right: 0.3vw solid #a099a1;
     transition: 0.1s;
+    aspect-ratio: 1/1;
     transform: scale(1);
 }
 
@@ -197,6 +197,7 @@ body {
     background: #c3c7cb;
     border: #868a8e 0.2vw solid;
     z-index: 1;
+    overflow-x: hidden;
 }
 
 #KeybindsContainer {
@@ -205,6 +206,7 @@ body {
     align-content: center;
     text-align: center;
     overflow-y: auto;
+    overflow-x: hidden;
     word-break: break-all; 
 }
 
@@ -296,8 +298,6 @@ body {
 }
 
 #canvas {
-    width: 59%;
-    height: 70%;
     position: absolute;
     top: 0px;
     right: 0%;

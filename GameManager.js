@@ -1,6 +1,16 @@
 const statisticContainer = document.getElementById('StatisticsInfo')
 const canvas = document.querySelector('canvas');
+canvas.width = window.innerWidth *  0.6
+canvas.height = window.innerHeight * 0.7
 const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false
+var CameraPosX = 0
+var CameraPosY = 0
+var CameraVelX = 0
+var CameraVelY = 0
+var CameraZoomScale = 2
+var MaxZoom = 3.5
+var MinZoom = 1.5
 var deltaTime = 0
 
 const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
@@ -40,6 +50,26 @@ var CurrentPlayerState = PlayerStates.None
 // Where we store keybinds
 let KeybindsConfig = [
 	{
+		Action: "Move-Up",
+		KeyAssigned: "W",
+		Description: "Moves the player's viewport UP"
+	},
+	{
+		Action: "Move-Down",
+		KeyAssigned: "S",
+		Description: "Moves the player's viewport DOWN"
+	},
+	{
+		Action: "Move-Left",
+		KeyAssigned: "A",
+		Description: "Moves the player's viewport LEFT"
+	},
+	{
+		Action: "Move-Right",
+		KeyAssigned: "D",
+		Description: "Moves the player's viewport RIGHT"
+	},
+	{
 		Action: "Switch Resource",
 		KeyAssigned: "T",
 		Description: "Switches the current mining resource of the player"
@@ -48,12 +78,6 @@ let KeybindsConfig = [
 		Action: "Cancel Placement",
 		KeyAssigned: "Q",
 		Description: "Cancels the placement/purchase of an object/building"
-
-	},
-	{
-		Action: "Easter-Egg",
-		KeyAssigned: "C",
-		Description: "I have no idea"
 	},
 ]
 
@@ -71,6 +95,77 @@ let ShopItems = [
 		ResourceAmounts: [1, 20],
 	}
 ]
+
+class Particle {
+	constructor(density, VerticalSpeed, HorizontalSpeed, ParticleSprite, MaxParticleWidth, MinParticleHeight) {
+		this.ParticleAmount = density
+		this.SpeedX = HorizontalSpeed
+		this.SpeedY = VerticalSpeed
+		this.SizeX = ParticleWidth
+		this.SizeY = ParticleHeight
+		this.ParticleAmount = density
+		this.ParticleContainer = new Array()
+		for(i = 0; i < this.ParticleAmount; i++) {
+
+		}
+	}
+}
+
+class Worker {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'background.jpg'
+		this.WorkerStates = {
+			Working: "Working",
+			Resting: "Resting",
+		}
+		this.AvailableJobs = {
+			Lumberjack: "Wood",
+			CoalMiner: "Coal"
+		}
+
+		this.CurrentWorkerState = 'None'
+		this.CurrentWorkerJob = "None"
+		this.PosY = startX
+		this.PosX = startY
+	}
+
+	ChangeState(StateChanged) {
+		var newState = Object.keys(this.WorkerStates).find(key => this.WorkerStates[StateChanged] == StateChanged)
+		if (newState != null) {
+			this.CurrentWorkerState = newState
+		} else {
+			console.log('Invalid State')
+		}
+	}
+
+	RenderWorker() {
+		ctx.drawImage(this.Sprite, (this.PosX + CameraPosX) * CameraZoomScale, (this.PosY + CameraPosY) * CameraZoomScale, 16* CameraZoomScale, 16 * CameraZoomScale)
+	}
+
+	MoveWorker() {
+		this.PosX += 0.5
+		this.PosY += 0.5
+	}
+
+	GatherResource() {
+		if (this.CurrentWorkerJob == this.WorkerStates.Lumberjack) {
+			
+		}
+	}
+
+	HandleWorker() {
+		this.RenderWorker()
+		if (this.CurrentWorkerState == this.WorkerStates.Working) {
+			this.MoveWorker()
+		} else{
+		}
+	}
+
+}
+
+var FirstWorker = new Worker(10,10)
+var SecondWorker = new Worker(30,10)
 
 var KeybindActionNames = new Array()
 var Keybinds = new Array()
@@ -259,32 +354,121 @@ function BuyItem(ItemBought) {
 	console.log(ItemObject)
 }
 
-function update() {
-	oldTime = Date.now()
-	requestAnimationFrame(function () {
-		update()
-		deltaTime = Date.now() - oldTime / 1000;
-	})
+function UpdateCamera() {
+	CameraPosX += CameraVelX
+	CameraPosY += CameraVelY
 }
 
-document.addEventListener('keyup', function (e) {
-	if(e.key == 't') {
+
+// All of the player input
+document.addEventListener('keyup', function (input) {
+	if(input.key == 't') {
 		console.log("Switched Resource");
 		switchResource();
-	} else if(e.key == "q") {
-		console.log("Pressed Q");
+	} else if(input.key == "p") {
+		FirstWorker.ChangeState("Working")
+	} else if(input.key == "w") {
+		if(CameraVelY == 0) {
+			CameraVelY = -2
+		} else {
+			CameraVelY = 0
+		}
+	} else if(input.key == "s") {
+		if(CameraVelY == 0) {
+			CameraVelY = 2
+		} else {
+			CameraVelY = 0
+		}
+	} else if(input.key == "a") {
+		if(CameraVelX == 0) {
+			CameraVelX = -2
+		} else {
+			CameraVelX = 0
+		}
+	} else if(input.key == 'd') {
+		if(CameraVelX == 0) {
+			CameraVelX = 2
+		} else {
+			CameraVelX = 0
+		}
 	}
 }, false);
 
+document.addEventListener('keydown', function(input) {
+	if(input.key == "w") {
+		if(CameraVelY == -2) {
+			CameraVelY = 0
+		} else {
+			CameraVelY = 2
+		}
+	} else if(input.key == "s") {
+		if(CameraVelY == 2) {
+			CameraVelY = 0
+		} else {
+			CameraVelY = -2
+		}
+	} else if(input.key == "a") {
+		if(CameraVelX == -2) {
+			CameraVelX = 0
+		} else {
+			CameraVelX = 2
+		}
+	} else if(input.key == 'd') {
+		if(CameraVelX == 2) {
+			CameraVelX = 0
+		} else {
+			CameraVelX = -2
+		}
+	} else if(input.key == 'e') {
+		var newScale = CameraZoomScale + 0.1
+		if (newScale > MaxZoom) {
+			CameraZoomScale = MaxZoom
+		} else {
+			CameraZoomScale = newScale
+		}
+	} else if(input.key == 'q') {
+		var newScale = CameraZoomScale - 0.1
+		if (newScale < MinZoom) {
+			CameraZoomScale = MinZoom
+		} else {
+			CameraZoomScale = newScale
+		}
+	}
+}, false);
+
+// Plays a click sound when mouse clicks
 document.addEventListener('click', function () {
 	click_sound.currentTime = 0;
 	click_sound.play();
 }, false)
 
-addEventListener("selectstart", event => event.preventDefault());
+canvas.addEventListener('click', function () {
+	console.log('clicked canvas')
+}, false)
 
+
+// Resizes canvas to fit the actual game
+function ResizeCanvas() {
+	canvas.width = window.innerWidth *  0.6
+	canvas.height = window.innerHeight * 0.7
+}
+window.onresize = ResizeCanvas
+
+function Update() {
+	oldTime = Date.now()
+	UpdateCamera()
+	FirstWorker.HandleWorker()
+	SecondWorker.HandleWorker()
+	requestAnimationFrame(function () {
+		ctx.clearRect(0,0, canvas.width, canvas.height)
+		deltaTime = Date.now() - oldTime / 10000;
+		Update()
+	})
+}
+
+addEventListener("selectstart", event => event.preventDefault());
 setInterval(SaveData, SaveWaitTime);
 CheckData()
 SetupStatistics()
 SetupKeybinds()
-update();
+Update();
