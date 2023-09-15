@@ -5,6 +5,7 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     font-family: Tahoma, Helvetica, Arial, sans-serif;
+    cursor: default;
 }
 
 ::-webkit-scrollbar {
@@ -86,7 +87,7 @@ body {
     font-size: 1.25vw;
 }
 
-.clicker {
+#clicker {
     width: 20vw;
     height: 20vw;
     border-radius: 50%;
@@ -101,11 +102,11 @@ body {
     transform: scale(1);
 }
 
-.clicker:hover {
+#clicker:hover {
     cursor: pointer;
 }
 
-.clicker:active {
+#clicker:active {
     border-top: 0.35vw solid #a099a1;
     border-left: 0.35vw solid #a099a1;
     border-bottom: 0.35vw solid white;
@@ -146,7 +147,7 @@ body {
     margin: auto;
 }
 
-#menuInfo {
+#StatisticsInfo {
     margin: auto;
     width: 98%;
     height: 100%;

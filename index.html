@@ -15,7 +15,7 @@
 	</div>
 	
 	<div id="clickerContainer" class="Window95Inset">
-		<button class="clicker" onclick="resourceClicker()"></button>
+		<button id = "clicker" onclick="resourceClicker()"></button>
 		<p class="gatherInfo">Currently Gathering: <span id="CurrentResource">Wood</span></p>
 		<p class="gatherInfo">Efficiency Per Click: <span id="ResourceEfficiency">1</span></p>
 		</div>
@@ -30,21 +30,15 @@
                     <button class="Button95Style" id="keybindsButton" onclick="OpenWindow('KeybindsWindow', 'flex')">Keybinds</button>
                 </div>
 
-                <div class="Window95Inset" id="menuInfo">
-					<p class="infoText">Rubles : <span id="Rubles">0</span></p>
-					<p class="infoText">Wood : <span id="Wood">0</span></p>
-					<p class="infoText">Coal : <span id="Coal">0</span></p>
-					<p class="infoText">Lumber : <span id="Lumber">0</span></p>
-					<p class="infoText">Total Residents : <span id="TotalPeople">0</span></p>
-					<p class="infoText">Lumber-Jacks : <span id="Lumber">0</span></p>
-					<p class="infoText">Coal-Miners : <span id="TotalPeople">0</span></p>
+                <div class="Window95Inset" id="StatisticsInfo">
+
                 </div>
         </div>
 		
 		<div class="Window95Style buttonContainer">
-			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
-			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
-			<button class="Button95Style menuButton" onclick="buyTent()">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
+			<button class="Button95Style menuButton" onclick="BuyItem('Tent')">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
+			<button class="Button95Style menuButton" onclick="BuyItem('Worker')">Buy a worker! : <span id="tentWood">1 Housing,</span> <span id="tentCoal"> 25 Coal</span></button>
+			<button class="Button95Style menuButton" onclick="BuyItem('Tent')">Buy a tent! : <span id="tentWood">15 Wood,</span> <span id="tentCoal"> 15 Coal</span></button>
 		</div>
 
 		<div class="Window95Style buttonContainer">
