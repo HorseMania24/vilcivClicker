@@ -37,8 +37,17 @@ var resourceNames = new Array("Wood", "Coal", "Lumber");
 var resourceAmounts = new Array();
 var resourceEfficiency = new Array();
 var resourceOptionIndex = 0
-
+var workers = new Array();
 var SaveWaitTime = 30000
+
+function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
+	ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, (PosX + CameraPosX) * CameraZoomScale, (PosY + CameraPosY) * CameraZoomScale, SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
+}
+
+function UpdateCamera() {
+	CameraPosX += CameraVelX
+	CameraPosY += CameraVelY
+}
 
 // Sets up the player states
 const PlayerStates = {
@@ -83,7 +92,6 @@ let KeybindsConfig = [
 
 // Where we store items and their worth
 let ShopItems = [
-
 	{
 		ItemName: 'Tent',
 		ResourcesList: ['Wood', 'Coal'],
@@ -95,6 +103,10 @@ let ShopItems = [
 		ResourceAmounts: [1, 20],
 	}
 ]
+
+const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry')
+const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda')
+const LastNames = new Array('Smith', 'Coal', 'Roe')
 
 class Particle {
 	constructor(density, VerticalSpeed, HorizontalSpeed, ParticleSprite, MaxParticleWidth, MinParticleHeight) {
@@ -113,8 +125,26 @@ class Particle {
 
 class Worker {
 	constructor(startX, startY) {
-		this.Sprite = new Image()
-		this.Sprite.src = 'background.jpg'
+		this.CurrentAnimation = new Image()
+		this.AnimationFrames = 0
+		this.CurrentAnimationFrame = 1
+		this.SpriteWidth = 24
+		this.SpriteHeight = 24
+		this.Facing = 'Down'
+		this.VelocityX = 0
+		this.VelocityY = 0
+
+		this.WalkAnimations = {
+			Walkdown: 'sprites/MaleVillager/MaleVillager_WalkDown.png',
+			Walkup: 'sprites/MaleVillager/MaleVillager_WalkUp.png',
+			Walkleft: 'sprites/MaleVillager/MaleVillager_WalkLeft.png',
+			Walkright: 'sprites/MaleVillager/MaleVillager_WalkRight.png',
+			AnimationFrames: 8
+		}
+
+		this.CurrentAnimation.src = this.WalkAnimations.Walkdown
+		this.AnimationFrames = this.WalkAnimations.AnimationFrames
+
 		this.WorkerStates = {
 			Working: "Working",
 			Resting: "Resting",
@@ -126,6 +156,17 @@ class Worker {
 
 		this.CurrentWorkerState = 'None'
 		this.CurrentWorkerJob = "None"
+		this.Gender
+		this.FirstName
+		this.LastName
+		if(RandomNum(0,2) == 1) {
+			this.Gender = "Male"
+			this.FirstName = MaleFirstNames[RandomNum(0, MaleFirstNames.length)]
+		} else {
+			this.Gender = "Female"
+			this.FirstName = FemaleFirstnames[RandomNum(0, MaleFirstNames.length)]
+		}
+		this.LastName = LastNames[RandomNum(0, LastNames.length)]
 		this.PosY = startX
 		this.PosX = startY
 	}
@@ -139,10 +180,6 @@ class Worker {
 		}
 	}
 
-	RenderWorker() {
-		ctx.drawImage(this.Sprite, (this.PosX + CameraPosX) * CameraZoomScale, (this.PosY + CameraPosY) * CameraZoomScale, 16* CameraZoomScale, 16 * CameraZoomScale)
-	}
-
 	MoveWorker() {
 		this.PosX += 0.5
 		this.PosY += 0.5
@@ -154,24 +191,39 @@ class Worker {
 		}
 	}
 
+	AnimationHandler() {
+		if(this.Facing == "Down") {
+			this.CurrentAnimation.src = this.WalkAnimations.Walkdown
+		} else if(this.Facing == "Down"== 'Up') {
+			this.CurrentAnimation.src = this.WalkAnimations.Walkup
+		}else if(this.Facing == "Down" == 'Left') {
+			this.CurrentAnimation.src = this.WalkAnimations.Walkleft
+		}else if(this.Facing == "Down" == 'Right') {
+			this.CurrentAnimation.src = this.WalkAnimations.Walkright
+		}
+	}
+
 	HandleWorker() {
-		this.RenderWorker()
+		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
+		this.CurrentAnimationFrame += 1
+		if (this.CurrentAnimationFrame > this.AnimationFrames) {
+			this.CurrentAnimationFrame = 1
+		}
 		if (this.CurrentWorkerState == this.WorkerStates.Working) {
 			this.MoveWorker()
 		} else{
 		}
 	}
-
 }
 
-var FirstWorker = new Worker(10,10)
-var SecondWorker = new Worker(30,10)
+for(i = 0; i < 5000; i++) {
+	var NewWorker = new Worker(RandomNum(0, 1500), RandomNum(0,1500))
+	workers.push(NewWorker)
+}
 
 var KeybindActionNames = new Array()
 var Keybinds = new Array()
 var KeybindDescriptions = new Array()
-
-// Creates a keybind UI element inside of the keybinds window for every keybind that exists
 
 function RandomNum(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
@@ -351,22 +403,56 @@ function switchResource() {
 
 function BuyItem(ItemBought) {
 	var ItemObject = ShopItems.filter(obj => obj.ItemName === ItemBought)[0];
-	console.log(ItemObject)
-}
+	var CanBuy = true
+	for(i = 0; i < ItemObject.ResourcesList.length; i++) {
+		if (CanBuy == false) {
+			break
+		} 
+		var ResourceTaken = resourceNames.find((resourceFound) => resourceFound == ItemObject.ResourcesList[i])
+		if (ResourceTaken != null) {
+			var ResourceAmountIndex = resourceNames.indexOf(ResourceTaken)
+			if(ItemObject.ResourceAmounts[i] <= resourceAmounts[ResourceAmountIndex]) {
+				CanBuy = true
+			} else {
+				CanBuy = false
+			}
+		} else if(ResourceTaken == null) {
+			ResourceTaken = statisticalResourceNames.find((resourceFound) => resourceFound == ItemObject.ResourcesList[i])
+			var ResourceAmountIndex = statisticalResourceNames.indexOf(ResourceTaken)
+			if(ItemObject.ResourceAmounts[i] <= statisticalResourceAmounts[ResourceAmountIndex]) {
+				CanBuy = true
+			} else {
+				CanBuy = false
+			}
+		}
+	}
+	
+	if (CanBuy == true) {
+		for(i = 0; i < ItemObject.ResourcesList.length; i++) {
+			var ResourceSubtracted = resourceNames.find((resourceFound) => resourceFound == ItemObject.ResourcesList[i])
+			if (ResourceSubtracted != null) {
+				var ResourceSubtractedIndex = resourceNames.indexOf(ResourceSubtracted)
+				resourceAmounts[ResourceSubtractedIndex] -= ItemObject.ResourceAmounts[i]
+				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = resourceNames[ResourceSubtractedIndex] + " : " + resourceAmounts[ResourceSubtractedIndex];
+			} else if(ResourceSubtracted == null) {
+				ResourceSubtracted = statisticalResourceNames.find((resourceFound) => resourceFound == ItemObject.ResourcesList[i])
+				var ResourceAmountIndex = statisticalResourceNames.indexOf(ResourceSubtracted)
+				statisticalResourceAmounts[ResourceAmountIndex] -= ItemObject.ResourceAmounts[i]
+				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = statisticalResourceNames[ResourceSubtractedIndex] + " : " + statisticalResourceAmounts[ResourceSubtractedIndex];
 
-function UpdateCamera() {
-	CameraPosX += CameraVelX
-	CameraPosY += CameraVelY
+			}
+		}
+		valid_transaction.play()
+	} else if(CanBuy == false) {
+		failed_transaction.play()
+	}
 }
-
 
 // All of the player input
 document.addEventListener('keyup', function (input) {
 	if(input.key == 't') {
 		console.log("Switched Resource");
 		switchResource();
-	} else if(input.key == "p") {
-		FirstWorker.ChangeState("Working")
 	} else if(input.key == "w") {
 		if(CameraVelY == 0) {
 			CameraVelY = -2
@@ -451,14 +537,21 @@ canvas.addEventListener('click', function () {
 function ResizeCanvas() {
 	canvas.width = window.innerWidth *  0.6
 	canvas.height = window.innerHeight * 0.7
+	ctx.imageSmoothingEnabled = false
 }
 window.onresize = ResizeCanvas
+
+function UpdateWorkers() {
+	for(i = 0; i < workers.length; i++) {
+		workers[i].HandleWorker()
+	}
+}
 
 function Update() {
 	oldTime = Date.now()
 	UpdateCamera()
-	FirstWorker.HandleWorker()
-	SecondWorker.HandleWorker()
+	UpdateWorkers()
+
 	requestAnimationFrame(function () {
 		ctx.clearRect(0,0, canvas.width, canvas.height)
 		deltaTime = Date.now() - oldTime / 10000;
