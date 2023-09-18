@@ -1,5 +1,6 @@
 const statisticContainer = document.getElementById('StatisticsInfo')
-const canvas = document.querySelector('canvas');
+const canvas = document.getElementById('canvas');
+const hiddenCanvas = document.createElement('canvas').getContext('2d')
 canvas.width = window.innerWidth *  0.6
 canvas.height = window.innerHeight * 0.7
 const ctx = canvas.getContext('2d');
@@ -10,8 +11,7 @@ var CameraVelX = 0
 var CameraVelY = 0
 var CameraZoomScale = 2
 var MaxZoom = 3.5
-var MinZoom = 1.5
-var deltaTime = 0
+var MinZoom = 0.5
 
 const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
 const valid_transaction = new Audio('sounds/valid_funds.mp3');
@@ -41,12 +41,11 @@ var workers = new Array();
 var SaveWaitTime = 30000
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
-	ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, (PosX + CameraPosX) * CameraZoomScale, (PosY + CameraPosY) * CameraZoomScale, SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
-}
-
-function UpdateCamera() {
-	CameraPosX += CameraVelX
-	CameraPosY += CameraVelY
+	if(Math.abs(PosX - CameraPosX) > 200 || Math.abs(PosY - CameraPosY) > 200) {
+		return
+	} else {
+		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale), Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
+	}
 }
 
 // Sets up the player states
@@ -107,6 +106,16 @@ let ShopItems = [
 const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry')
 const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda')
 const LastNames = new Array('Smith', 'Coal', 'Roe')
+
+class SpriteObject {
+	constructor(startX, startY, SpriteGiven, Width, Height) {
+		this.PosX = startX
+		this.PosY = startY
+		this.Sprite = SpriteGiven
+		this.SpriteWidth = SpriteGiven.Width
+		this.SpriteHeight = SpriteGiven.Height
+	}
+}
 
 class Particle {
 	constructor(density, VerticalSpeed, HorizontalSpeed, ParticleSprite, MaxParticleWidth, MinParticleHeight) {
@@ -191,7 +200,7 @@ class Worker {
 		}
 	}
 
-	AnimationHandler() {
+	ChangeAnimation() {
 		if(this.Facing == "Down") {
 			this.CurrentAnimation.src = this.WalkAnimations.Walkdown
 		} else if(this.Facing == "Down"== 'Up') {
@@ -203,21 +212,50 @@ class Worker {
 		}
 	}
 
-	HandleWorker() {
-		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
+	PlayAnimation() {
 		this.CurrentAnimationFrame += 1
 		if (this.CurrentAnimationFrame > this.AnimationFrames) {
 			this.CurrentAnimationFrame = 1
 		}
-		if (this.CurrentWorkerState == this.WorkerStates.Working) {
-			this.MoveWorker()
-		} else{
-		}
+	}
+
+	HandleWorker() {
+		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
 	}
 }
 
-for(i = 0; i < 5000; i++) {
-	var NewWorker = new Worker(RandomNum(0, 1500), RandomNum(0,1500))
+class GrassChunk {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'sprites/World/GrassChunk.png'
+		this.SpriteHeight = this.Sprite.height
+		this.SpriteWidth = this.Sprite.width
+		this.PosX = startX
+		this.PosY = startY
+	}
+
+	DrawChunk() {
+		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
+	}
+}
+
+var ChunkCache = new Array()
+
+for(y = 0; y < 25; y++) {
+	for(x = 0; x < 25; x++) {
+		var NewChunk = new GrassChunk(x * 200, y * 200)
+		var NewChunk2 = new GrassChunk(-x * 200, y * 200)
+		var NewChunk3 = new GrassChunk(-x * 200, -y * 200)
+		var NewChunk4 = new GrassChunk(x * 200, -y * 200)
+		ChunkCache.push(NewChunk)
+		ChunkCache.push(NewChunk2)
+		ChunkCache.push(NewChunk3)
+		ChunkCache.push(NewChunk4)
+	}
+}
+
+for(i = 0; i < 100000; i++) {
+	var NewWorker = new Worker(RandomNum(-1500, 1500), RandomNum(-1500,1500))
 	workers.push(NewWorker)
 }
 
@@ -227,10 +265,6 @@ var KeybindDescriptions = new Array()
 
 function RandomNum(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
-}
-
-function wait(TimeSet) {
-	return new Promise(resolve => setTimeout(resolve, TimeSet));
 }
 
 function CloseWindow(WindowClosing) {
@@ -514,6 +548,7 @@ document.addEventListener('keydown', function(input) {
 		}
 	} else if(input.key == 'q') {
 		var newScale = CameraZoomScale - 0.1
+		console.log(newScale)
 		if (newScale < MinZoom) {
 			CameraZoomScale = MinZoom
 		} else {
@@ -541,20 +576,40 @@ function ResizeCanvas() {
 }
 window.onresize = ResizeCanvas
 
+function UpdateChunks() {
+	for(i =  0; i < ChunkCache.length; i++) {
+		ChunkCache[i].DrawChunk()
+	}
+}
+
 function UpdateWorkers() {
 	for(i = 0; i < workers.length; i++) {
 		workers[i].HandleWorker()
 	}
 }
 
+function UpdateCamera() {
+	if(CameraVelX != 0) {
+		CameraPosX += CameraVelX
+	}
+	if(CameraVelY != 0) {
+		CameraPosY += CameraVelY
+	}
+}
+
+function FixedUpdate() {
+	for(i = 0; i < workers.length; i++) {
+		workers[i].PlayAnimation()
+	}
+}
+
 function Update() {
-	oldTime = Date.now()
 	UpdateCamera()
+	UpdateChunks()
 	UpdateWorkers()
 
 	requestAnimationFrame(function () {
 		ctx.clearRect(0,0, canvas.width, canvas.height)
-		deltaTime = Date.now() - oldTime / 10000;
 		Update()
 	})
 }
@@ -564,4 +619,5 @@ setInterval(SaveData, SaveWaitTime);
 CheckData()
 SetupStatistics()
 SetupKeybinds()
+setInterval(FixedUpdate, 20)
 Update();
