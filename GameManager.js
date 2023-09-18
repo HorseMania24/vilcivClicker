@@ -48,7 +48,7 @@ function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationF
 	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistance || Math.abs(CameraPosY + PosY) > CurrentRenderDistance) {
 		return
 	} else {
-		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, (PosX + CameraPosX) * CameraZoomScale,(PosY + CameraPosY) * CameraZoomScale, SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
+		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale),Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
 	}
 }
 
@@ -224,8 +224,6 @@ class Worker {
 	}
 
 	HandleWorker() {
-		this.PosX = Math.round(this.PosX)
-		this.PosY = Math.round(this.PosY)
 		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
 	}
 }
@@ -241,8 +239,6 @@ class GrassChunk {
 	}
 
 	DrawChunk() {
-		this.PosX = Math.round(this.PosX)
-		this.PosY = Math.round(this.PosY)
 		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
 	}
 }
