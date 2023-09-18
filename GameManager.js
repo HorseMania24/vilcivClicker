@@ -1,17 +1,21 @@
 const statisticContainer = document.getElementById('StatisticsInfo')
 const canvas = document.getElementById('canvas');
-const hiddenCanvas = document.createElement('canvas').getContext('2d')
 canvas.width = window.innerWidth *  0.6
 canvas.height = window.innerHeight * 0.7
+canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(45%)'
 const ctx = canvas.getContext('2d');
+ctx.translate(canvas.width*0.5,canvas.height*0.5)
 ctx.imageSmoothingEnabled = false
 var CameraPosX = 0
 var CameraPosY = 0
 var CameraVelX = 0
 var CameraVelY = 0
-var CameraZoomScale = 2
-var MaxZoom = 3.5
-var MinZoom = 0.5
+var CameraZoomScale = 3
+var MaxZoom = 3
+var MinZoom = 1
+var MinRenderDistance = 350
+var OriginalRenderDistance = 350
+var CurrentRenderDistance = 350
 
 const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
 const valid_transaction = new Audio('sounds/valid_funds.mp3');
@@ -41,10 +45,10 @@ var workers = new Array();
 var SaveWaitTime = 30000
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
-	if(Math.abs(PosX - CameraPosX) > 200 || Math.abs(PosY - CameraPosY) > 200) {
+	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistance || Math.abs(CameraPosY + PosY) > CurrentRenderDistance) {
 		return
 	} else {
-		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale), Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
+		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, (PosX + CameraPosX) * CameraZoomScale,(PosY + CameraPosY) * CameraZoomScale, SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
 	}
 }
 
@@ -220,6 +224,8 @@ class Worker {
 	}
 
 	HandleWorker() {
+		this.PosX = Math.round(this.PosX)
+		this.PosY = Math.round(this.PosY)
 		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
 	}
 }
@@ -235,6 +241,8 @@ class GrassChunk {
 	}
 
 	DrawChunk() {
+		this.PosX = Math.round(this.PosX)
+		this.PosY = Math.round(this.PosY)
 		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
 	}
 }
@@ -254,8 +262,8 @@ for(y = 0; y < 25; y++) {
 	}
 }
 
-for(i = 0; i < 100000; i++) {
-	var NewWorker = new Worker(RandomNum(-1500, 1500), RandomNum(-1500,1500))
+for(i = 0; i < 50000; i++) {
+	var NewWorker = new Worker(RandomNum(-1500,1500), RandomNum(-1500,1500))
 	workers.push(NewWorker)
 }
 
@@ -546,6 +554,10 @@ document.addEventListener('keydown', function(input) {
 		} else {
 			CameraZoomScale = newScale
 		}
+		CurrentRenderDistance = Math.round(OriginalRenderDistance * (MaxZoom - CameraZoomScale))
+		if(CurrentRenderDistance < MinRenderDistance) {
+			CurrentRenderDistance = MinRenderDistance
+		}
 	} else if(input.key == 'q') {
 		var newScale = CameraZoomScale - 0.1
 		console.log(newScale)
@@ -553,6 +565,10 @@ document.addEventListener('keydown', function(input) {
 			CameraZoomScale = MinZoom
 		} else {
 			CameraZoomScale = newScale
+		}
+		CurrentRenderDistance = Math.round(OriginalRenderDistance * (MaxZoom - CameraZoomScale))
+		if(CurrentRenderDistance < MinRenderDistance) {
+			CurrentRenderDistance = MinRenderDistance
 		}
 	}
 }, false);
@@ -604,14 +620,11 @@ function FixedUpdate() {
 }
 
 function Update() {
+	ctx.clearRect(0,0, canvas.width, canvas.height)
 	UpdateCamera()
 	UpdateChunks()
 	UpdateWorkers()
-
-	requestAnimationFrame(function () {
-		ctx.clearRect(0,0, canvas.width, canvas.height)
-		Update()
-	})
+	requestAnimationFrame(Update)
 }
 
 addEventListener("selectstart", event => event.preventDefault());
@@ -619,5 +632,5 @@ setInterval(SaveData, SaveWaitTime);
 CheckData()
 SetupStatistics()
 SetupKeybinds()
-setInterval(FixedUpdate, 20)
+setInterval(FixedUpdate, 100)
 Update();
