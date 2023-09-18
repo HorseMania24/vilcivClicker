@@ -1,7 +1,7 @@
 const statisticContainer = document.getElementById('StatisticsInfo')
 const canvas = document.getElementById('canvas');
-canvas.width = window.innerWidth *  0.6
-canvas.height = window.innerHeight * 0.7
+canvas.width = Math.round(window.innerWidth *  0.6)
+canvas.height = Math.round(window.innerHeight * 0.7)
 canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(45%)'
 const ctx = canvas.getContext('2d');
 ctx.translate(canvas.width*0.5,canvas.height*0.5)
@@ -27,7 +27,7 @@ const woodHitVariations = new Array('sounds/Hits/WoodHit1.mp3', 'sounds/Hits/Woo
 const coalHitVariations = new Array('sounds/Hits/CoalHit1.mp3', 'sounds/Hits/CoalHit2.mp3');
 var musicAudio = new Audio();
 musicAudio.volume = 0
-var music = new Array('sounds/day_time.mp3', 'sounds/Ice_cavern.mp3');
+var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3');
 var musicIndex = 0;
 var muteMusic = true;
 musicAudio.loop = true
@@ -220,6 +220,7 @@ class Worker {
 		this.CurrentAnimationFrame += 1
 		if (this.CurrentAnimationFrame > this.AnimationFrames) {
 			this.CurrentAnimationFrame = 1
+			return
 		}
 	}
 
@@ -258,10 +259,7 @@ for(y = 0; y < 25; y++) {
 	}
 }
 
-for(i = 0; i < 50000; i++) {
-	var NewWorker = new Worker(RandomNum(-1500,1500), RandomNum(-1500,1500))
-	workers.push(NewWorker)
-}
+
 
 var KeybindActionNames = new Array()
 var Keybinds = new Array()
@@ -575,8 +573,12 @@ document.addEventListener('click', function () {
 	click_sound.play();
 }, false)
 
-canvas.addEventListener('click', function () {
-	console.log('clicked canvas')
+canvas.addEventListener('click', function (mouse) {
+	var rect = canvas.getBoundingClientRect()
+	var clickPosX =  mouse.offsetX - CameraPosX - rect.left + (canvas.width * 0.125) * CameraZoomScale
+	var clickPosY = mouse.offsetY - CameraPosY - rect.top - (canvas.height * 0.5)
+	var NewWorker5 = new Worker(clickPosY, clickPosX)
+	workers.push(NewWorker5)
 }, false)
 
 
@@ -623,10 +625,13 @@ function Update() {
 	requestAnimationFrame(Update)
 }
 
+window.addEventListener('load', function () {
+	CheckData()
+	SetupStatistics()
+	SetupKeybinds()
+	setInterval(FixedUpdate, 100)
+	Update();
+  })
+
 addEventListener("selectstart", event => event.preventDefault());
 setInterval(SaveData, SaveWaitTime);
-CheckData()
-SetupStatistics()
-SetupKeybinds()
-setInterval(FixedUpdate, 100)
-Update();
