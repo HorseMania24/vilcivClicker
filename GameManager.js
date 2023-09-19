@@ -262,7 +262,7 @@ class Worker {
 		}
 	}
 
-	MoveWorker() {
+	MoveWorkerTo() {
 		this.PosX += 0.5
 		this.PosY += 0.5
 	}
@@ -688,7 +688,7 @@ function UpdateCamera() {
 	}
 }
 
-for(i = 0; i < 20000; i++) {
+for(i = 0; i < 15000; i++) {
 	var NewWorker = new Worker(RandomNum(-3000, 3000), RandomNum(-3000, 3000))
 	workers.push(NewWorker)
 }
@@ -707,14 +707,16 @@ function Update() {
 	requestAnimationFrame(Update)
 }
 
-window.addEventListener('load', function () {
-	CheckData()
-	SetupStatistics()
-	SetupKeybinds()
-	CreateChunks()
-	setInterval(FixedUpdate, 100)
-	Update();
-  })
+  document.onreadystatechange = () => {
+	if (document.readyState === "interactive") {
+		CheckData()
+		CreateChunks()
+		SetupStatistics()
+		SetupKeybinds()
+		setInterval(FixedUpdate, 100)
+		Update();
+	}
+  };
 
 addEventListener("selectstart", event => event.preventDefault());
 setInterval(SaveData, SaveWaitTime);
