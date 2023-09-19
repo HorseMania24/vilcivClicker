@@ -2,7 +2,8 @@ const statisticContainer = document.getElementById('StatisticsInfo');
 const canvas = document.getElementById('canvas');
 canvas.width = Math.round(window.innerWidth *  0.6);
 canvas.height = Math.round(window.innerHeight * 0.7);
-canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(45%)';
+//canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(25%)';
+canvas.style.filter = 'saturate(0.75)';
 const ctx = canvas.getContext('2d');
 ctx.translate(canvas.width*0.5,canvas.height*0.5);
 ctx.imageSmoothingEnabled = false;
@@ -11,6 +12,7 @@ var CameraPosY = 0;
 var CameraVelX = 0;
 var CameraVelY = 0;
 var CameraZoomScale = 3;
+var CamVelocity = 4
 const MaxZoom = 3;
 const MinZoom = 1;
 const MinRenderDistance = 400;
@@ -41,7 +43,9 @@ var resourceAmounts = new Array();
 var resourceEfficiency = new Array();
 var resourceOptionIndex = 0;
 var workers = new Array();
-var ChunkCache = new Array();
+var DrawLayer1 = new Array()
+var DrawLayer2 = new Array()
+var DrawLayer3 = new Array()
 var SaveWaitTime = 30000;
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
@@ -141,6 +145,66 @@ class Particle {
 	}
 }
 
+class GrassChunk {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'sprites/World/GrassChunk.png'
+		this.SpriteHeight = this.Sprite.height
+		this.SpriteWidth = this.Sprite.width
+		this.PosX = startX
+		this.PosY = startY
+	}
+
+	DrawChunk() {
+		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
+	}
+}
+
+class PineTree {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'sprites/World/PineTree.png'
+		this.SpriteHeight = this.Sprite.height
+		this.SpriteWidth = this.Sprite.width
+		this.PosX = startX
+		this.PosY = startY
+	}
+
+	DrawChunk() {
+		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
+	}
+}
+
+class CoalVein {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'sprites/World/CoalVein.png'
+		this.SpriteHeight = this.Sprite.height
+		this.SpriteWidth = this.Sprite.width
+		this.PosX = startX
+		this.PosY = startY
+	}
+
+	DrawChunk() {
+		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
+	}
+}
+
+class Tent {
+	constructor(startX, startY) {
+		this.Sprite = new Image()
+		this.Sprite.src = 'sprites/World/Tent.png'
+		this.SpriteHeight = this.Sprite.height
+		this.SpriteWidth = this.Sprite.width
+		this.PosX = startX
+		this.PosY = startY
+	}
+
+	DrawChunk() {
+		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
+	}
+}
+
 class Worker {
 	constructor(startX, startY) {
 		this.CurrentAnimation = new Image()
@@ -185,8 +249,8 @@ class Worker {
 			this.FirstName = FemaleFirstnames[RandomNum(0, FemaleFirstnames.length)]
 		}
 		this.LastName = LastNames[RandomNum(0, LastNames.length)]
-		this.PosY = startX
-		this.PosX = startY
+		this.PosY = startY
+		this.PosX = startX
 	}
 
 	ChangeState(StateChanged) {
@@ -231,21 +295,6 @@ class Worker {
 
 	HandleWorker() {
 		Draw(this.CurrentAnimation, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, this.CurrentAnimationFrame)
-	}
-}
-
-class GrassChunk {
-	constructor(startX, startY) {
-		this.Sprite = new Image()
-		this.Sprite.src = 'sprites/World/GrassChunk.png'
-		this.SpriteHeight = this.Sprite.height
-		this.SpriteWidth = this.Sprite.width
-		this.PosX = startX
-		this.PosY = startY
-	}
-
-	DrawChunk() {
-		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
 	}
 }
 
@@ -479,25 +528,25 @@ document.addEventListener('keyup', function (input) {
 		switchResource();
 	} else if(input.key == "w") {
 		if(CameraVelY == 0) {
-			CameraVelY = -2
+			CameraVelY = -CamVelocity
 		} else {
 			CameraVelY = 0
 		}
 	} else if(input.key == "s") {
 		if(CameraVelY == 0) {
-			CameraVelY = 2
+			CameraVelY = CamVelocity
 		} else {
 			CameraVelY = 0
 		}
 	} else if(input.key == "a") {
 		if(CameraVelX == 0) {
-			CameraVelX = -2
+			CameraVelX = -CamVelocity
 		} else {
 			CameraVelX = 0
 		}
 	} else if(input.key == 'd') {
 		if(CameraVelX == 0) {
-			CameraVelX = 2
+			CameraVelX = CamVelocity
 		} else {
 			CameraVelX = 0
 		}
@@ -506,28 +555,28 @@ document.addEventListener('keyup', function (input) {
 
 document.addEventListener('keydown', function(input) {
 	if(input.key == "w") {
-		if(CameraVelY == -2) {
+		if(CameraVelY == -CamVelocity) {
 			CameraVelY = 0
 		} else {
-			CameraVelY = 2
+			CameraVelY = CamVelocity
 		}
 	} else if(input.key == "s") {
-		if(CameraVelY == 2) {
+		if(CameraVelY == CamVelocity) {
 			CameraVelY = 0
 		} else {
-			CameraVelY = -2
+			CameraVelY = -CamVelocity
 		}
 	} else if(input.key == "a") {
-		if(CameraVelX == -2) {
+		if(CameraVelX == -CamVelocity) {
 			CameraVelX = 0
 		} else {
-			CameraVelX = 2
+			CameraVelX = CamVelocity
 		}
 	} else if(input.key == 'd') {
-		if(CameraVelX == 2) {
+		if(CameraVelX == CamVelocity) {
 			CameraVelX = 0
 		} else {
-			CameraVelX = -2
+			CameraVelX = -CamVelocity
 		}
 	} else if(input.key == 'e') {
 		var newScale = CameraZoomScale + 0.1
@@ -571,8 +620,8 @@ function GetMousePosition(input) {
 
 canvas.addEventListener('click', function (mouse) {
 	var ClickPos = GetMousePosition(mouse)
-	var NewWorker5 = new Worker(ClickPos.Y, ClickPos.X)
-	workers.push(NewWorker5)
+	var NewTent = new Tent(ClickPos.X, ClickPos.Y)
+	DrawLayer3.push(NewTent)
 }, false)
 
 
@@ -592,16 +641,35 @@ function CreateChunks() {
 			var NewChunk2 = new GrassChunk(-x * 200, y * 200)
 			var NewChunk3 = new GrassChunk(-x * 200, -y * 200)
 			var NewChunk4 = new GrassChunk(x * 200, -y * 200)
-			ChunkCache.push(NewChunk)
-			ChunkCache.push(NewChunk2)
-			ChunkCache.push(NewChunk3)
-			ChunkCache.push(NewChunk4)
+			var NewCoal = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
+			var NewCoal2 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
+			var NewCoal3 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
+			var NewCoal4 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
+			var NewTree = new PineTree(RandomNum(-1500,1500), RandomNum(-1500,1500))
+			var NewTree2 = new PineTree(RandomNum(-1500,1500), RandomNum(-1500,1500))
+			DrawLayer1.push(NewChunk)
+			DrawLayer1.push(NewChunk2)
+			DrawLayer1.push(NewChunk3)
+			DrawLayer1.push(NewChunk4)
+			DrawLayer2.push(NewCoal)
+			DrawLayer2.push(NewCoal2)
+			DrawLayer2.push(NewCoal3)
+			DrawLayer2.push(NewCoal4)
+			DrawLayer3.push(NewTree)
+			DrawLayer3.push(NewTree2)
 		}
 	}
+
 }
 function UpdateChunks() {
-	for(i =  0; i < ChunkCache.length; i++) {
-		ChunkCache[i].DrawChunk()
+	for(i =  0; i < DrawLayer1.length; i++) {
+		DrawLayer1[i].DrawChunk()
+	}
+	for(i =  0; i < DrawLayer2.length; i++) {
+		DrawLayer2[i].DrawChunk()
+	}
+	for(i =  0; i < DrawLayer3.length; i++) {
+		DrawLayer3[i].DrawChunk()
 	}
 }
 
@@ -618,6 +686,11 @@ function UpdateCamera() {
 	if(CameraVelY != 0) {
 		CameraPosY += CameraVelY
 	}
+}
+
+for(i = 0; i < 20000; i++) {
+	var NewWorker = new Worker(RandomNum(-3000, 3000), RandomNum(-3000, 3000))
+	workers.push(NewWorker)
 }
 
 function FixedUpdate() {
