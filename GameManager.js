@@ -1,48 +1,48 @@
-const statisticContainer = document.getElementById('StatisticsInfo')
+const statisticContainer = document.getElementById('StatisticsInfo');
 const canvas = document.getElementById('canvas');
-canvas.width = Math.round(window.innerWidth *  0.6)
-canvas.height = Math.round(window.innerHeight * 0.7)
-canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(45%)'
+canvas.width = Math.round(window.innerWidth *  0.6);
+canvas.height = Math.round(window.innerHeight * 0.7);
+canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(45%)';
 const ctx = canvas.getContext('2d');
-ctx.translate(canvas.width*0.5,canvas.height*0.5)
-ctx.imageSmoothingEnabled = false
-var CameraPosX = 0
-var CameraPosY = 0
-var CameraVelX = 0
-var CameraVelY = 0
-var CameraZoomScale = 3
-var MaxZoom = 3
-var MinZoom = 1
-var MinRenderDistance = 350
-var OriginalRenderDistance = 350
-var CurrentRenderDistance = 350
+ctx.translate(canvas.width*0.5,canvas.height*0.5);
+ctx.imageSmoothingEnabled = false;
+var CameraPosX = 0;
+var CameraPosY = 0;
+var CameraVelX = 0;
+var CameraVelY = 0;
+var CameraZoomScale = 3;
+const MaxZoom = 3;
+const MinZoom = 1;
+const MinRenderDistance = 400;
+var CurrentRenderDistance = 400;
 
 const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
 const valid_transaction = new Audio('sounds/valid_funds.mp3');
-const click_sound = new Audio('sounds/mouse_click.mp3')
-click_sound.volume = 0.1
+const click_sound = new Audio('sounds/mouse_click.mp3');
+click_sound.volume = 0.1;
 
 var HitAudio = new Audio();
 const woodHitVariations = new Array('sounds/Hits/WoodHit1.mp3', 'sounds/Hits/WoodHit2.mp3', 'sounds/Hits/WoodHit3.mp3', 'sounds/Hits/WoodHit4.mp3', 'sounds/Hits/WoodHit5.mp3');
 const coalHitVariations = new Array('sounds/Hits/CoalHit1.mp3', 'sounds/Hits/CoalHit2.mp3');
 var musicAudio = new Audio();
-musicAudio.volume = 0
+musicAudio.volume = 0;
 var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3');
 var musicIndex = 0;
 var muteMusic = true;
-musicAudio.loop = true
+musicAudio.loop = true;
 
 var isDayTime = true;
 var isNightTime = false;
-var statisticalResourceNames = new Array('Rubles', 'AvailableHousing', 'TotalHousing')
+var statisticalResourceNames = new Array('Rubles', 'AvailableHousing', 'TotalHousing');
 var statisticalResourceAmounts = new Array();
 
 var resourceNames = new Array("Wood", "Coal", "Lumber");
 var resourceAmounts = new Array();
 var resourceEfficiency = new Array();
-var resourceOptionIndex = 0
+var resourceOptionIndex = 0;
 var workers = new Array();
-var SaveWaitTime = 30000
+var ChunkCache = new Array();
+var SaveWaitTime = 30000;
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
 	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistance || Math.abs(CameraPosY + PosY) > CurrentRenderDistance) {
@@ -82,14 +82,19 @@ let KeybindsConfig = [
 		Description: "Moves the player's viewport RIGHT"
 	},
 	{
+		Action: "Zoom-Out",
+		KeyAssigned: "Q",
+		Description: "Zoomes the player's viewport OUT"
+	},
+	{
+		Action: "Zoom-In",
+		KeyAssigned: "E",
+		Description: "Zoomes the player's viewport IN"
+	},
+	{
 		Action: "Switch Resource",
 		KeyAssigned: "T",
 		Description: "Switches the current mining resource of the player"
-	},
-	{
-		Action: "Cancel Placement",
-		KeyAssigned: "Q",
-		Description: "Cancels the placement/purchase of an object/building"
 	},
 ]
 
@@ -107,8 +112,8 @@ let ShopItems = [
 	}
 ]
 
-const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry')
-const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda')
+const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry', 'Robert','Nair','Sloe','Kai','Ronald','Richard','Ulysis')
+const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda', 'Keesha', 'Roe', 'Jessica', 'Marline', 'Molly')
 const LastNames = new Array('Smith', 'Coal', 'Roe')
 
 class SpriteObject {
@@ -177,7 +182,7 @@ class Worker {
 			this.FirstName = MaleFirstNames[RandomNum(0, MaleFirstNames.length)]
 		} else {
 			this.Gender = "Female"
-			this.FirstName = FemaleFirstnames[RandomNum(0, MaleFirstNames.length)]
+			this.FirstName = FemaleFirstnames[RandomNum(0, FemaleFirstnames.length)]
 		}
 		this.LastName = LastNames[RandomNum(0, LastNames.length)]
 		this.PosY = startX
@@ -243,23 +248,6 @@ class GrassChunk {
 		Draw(this.Sprite, this.PosX, this.PosY, this.SpriteWidth, this.SpriteHeight, 1)
 	}
 }
-
-var ChunkCache = new Array()
-
-for(y = 0; y < 25; y++) {
-	for(x = 0; x < 25; x++) {
-		var NewChunk = new GrassChunk(x * 200, y * 200)
-		var NewChunk2 = new GrassChunk(-x * 200, y * 200)
-		var NewChunk3 = new GrassChunk(-x * 200, -y * 200)
-		var NewChunk4 = new GrassChunk(x * 200, -y * 200)
-		ChunkCache.push(NewChunk)
-		ChunkCache.push(NewChunk2)
-		ChunkCache.push(NewChunk3)
-		ChunkCache.push(NewChunk4)
-	}
-}
-
-
 
 var KeybindActionNames = new Array()
 var Keybinds = new Array()
@@ -548,7 +536,7 @@ document.addEventListener('keydown', function(input) {
 		} else {
 			CameraZoomScale = newScale
 		}
-		CurrentRenderDistance = Math.round(OriginalRenderDistance * (MaxZoom - CameraZoomScale))
+		CurrentRenderDistance = Math.round(MinRenderDistance * (MaxZoom - CameraZoomScale))
 		if(CurrentRenderDistance < MinRenderDistance) {
 			CurrentRenderDistance = MinRenderDistance
 		}
@@ -560,7 +548,7 @@ document.addEventListener('keydown', function(input) {
 		} else {
 			CameraZoomScale = newScale
 		}
-		CurrentRenderDistance = Math.round(OriginalRenderDistance * (MaxZoom - CameraZoomScale))
+		CurrentRenderDistance = Math.round(MinRenderDistance * (MaxZoom - CameraZoomScale))
 		if(CurrentRenderDistance < MinRenderDistance) {
 			CurrentRenderDistance = MinRenderDistance
 		}
@@ -573,11 +561,17 @@ document.addEventListener('click', function () {
 	click_sound.play();
 }, false)
 
-canvas.addEventListener('click', function (mouse) {
+function GetMousePosition(input) {
 	var rect = canvas.getBoundingClientRect()
-	var clickPosX =  mouse.offsetX - CameraPosX - rect.left + (canvas.width * 0.125) * CameraZoomScale
-	var clickPosY = mouse.offsetY - CameraPosY - rect.top - (canvas.height * 0.5)
-	var NewWorker5 = new Worker(clickPosY, clickPosX)
+	return {
+		X: (((input.clientX - rect.left) / CameraZoomScale) - CameraPosX) - (canvas.width / 2 / CameraZoomScale),
+		Y: (((input.clientY - rect.top) / CameraZoomScale) - CameraPosY) - (canvas.height / 2 / CameraZoomScale)
+	}
+}
+
+canvas.addEventListener('click', function (mouse) {
+	var ClickPos = GetMousePosition(mouse)
+	var NewWorker5 = new Worker(ClickPos.Y, ClickPos.X)
 	workers.push(NewWorker5)
 }, false)
 
@@ -587,9 +581,24 @@ function ResizeCanvas() {
 	canvas.width = window.innerWidth *  0.6
 	canvas.height = window.innerHeight * 0.7
 	ctx.imageSmoothingEnabled = false
+	ctx.translate(canvas.width*0.5,canvas.height*0.5);
 }
 window.onresize = ResizeCanvas
 
+function CreateChunks() {
+	for(y = 0; y < 25; y++) {
+		for(x = 0; x < 25; x++) {
+			var NewChunk = new GrassChunk(x * 200, y * 200)
+			var NewChunk2 = new GrassChunk(-x * 200, y * 200)
+			var NewChunk3 = new GrassChunk(-x * 200, -y * 200)
+			var NewChunk4 = new GrassChunk(x * 200, -y * 200)
+			ChunkCache.push(NewChunk)
+			ChunkCache.push(NewChunk2)
+			ChunkCache.push(NewChunk3)
+			ChunkCache.push(NewChunk4)
+		}
+	}
+}
 function UpdateChunks() {
 	for(i =  0; i < ChunkCache.length; i++) {
 		ChunkCache[i].DrawChunk()
@@ -629,6 +638,7 @@ window.addEventListener('load', function () {
 	CheckData()
 	SetupStatistics()
 	SetupKeybinds()
+	CreateChunks()
 	setInterval(FixedUpdate, 100)
 	Update();
   })
