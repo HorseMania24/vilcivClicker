@@ -708,7 +708,7 @@ function Update() {
 }
 
   document.onreadystatechange = () => {
-	if (document.readyState === "interactive") {
+	if (document.readyState === "complete") {
 		CheckData()
 		CreateChunks()
 		SetupStatistics()
