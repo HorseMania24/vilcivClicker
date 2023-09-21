@@ -2,21 +2,29 @@ const statisticContainer = document.getElementById('StatisticsInfo');
 const canvas = document.getElementById('canvas');
 canvas.width = Math.round(window.innerWidth *  0.6);
 canvas.height = Math.round(window.innerHeight * 0.7);
-//canvas.style.filter = 'saturate(0.75) hue-rotate(50deg) brightness(25%)';
-canvas.style.filter = 'saturate(0.75)';
+canvas.style.filter = 'saturate(0.75) hue-rotate(25deg) brightness(25%)';
+//canvas.style.filter = 'saturate(0.75)';
 const ctx = canvas.getContext('2d');
 ctx.translate(canvas.width*0.5,canvas.height*0.5);
 ctx.imageSmoothingEnabled = false;
+var CanvasCenterWidth = canvas.width / 2
+var CanvasCenterHeight = canvas.height / 2
 var CameraPosX = 0;
 var CameraPosY = 0;
 var CameraVelX = 0;
 var CameraVelY = 0;
-var CameraZoomScale = 3;
 var CamVelocity = 4
+const CamDefaultVel = 4
+const CamFasterVel = 10
+var CameraZoomScale = 2
 const MaxZoom = 3;
 const MinZoom = 1;
+var MinRenderDistanceHeight = (canvas.height / 1.85) * MinZoom;
+var MinRenderDistanceWidth = (canvas.width / 2) * MinZoom;
+var CurrentRenderDistanceWidth = MinRenderDistanceWidth;
+var CurrentRenderDistanceHeight = MinRenderDistanceHeight;
+var MaxCamDistance = 9000
 const MinRenderDistance = 400;
-var CurrentRenderDistance = 400;
 
 const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
 const valid_transaction = new Audio('sounds/valid_funds.mp3');
@@ -28,10 +36,9 @@ const woodHitVariations = new Array('sounds/Hits/WoodHit1.mp3', 'sounds/Hits/Woo
 const coalHitVariations = new Array('sounds/Hits/CoalHit1.mp3', 'sounds/Hits/CoalHit2.mp3');
 var musicAudio = new Audio();
 musicAudio.volume = 0;
-var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3');
-var musicIndex = 0;
+var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3', 'music/vc_home.mp3');
 var muteMusic = true;
-musicAudio.loop = true;
+musicAudio.loop = false;
 
 var isDayTime = true;
 var isNightTime = false;
@@ -49,7 +56,7 @@ var DrawLayer3 = new Array()
 var SaveWaitTime = 30000;
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
-	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistance || Math.abs(CameraPosY + PosY) > CurrentRenderDistance) {
+	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistanceWidth || Math.abs(CameraPosY + PosY) > CurrentRenderDistanceHeight) {
 		return
 	} else {
 		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale),Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
@@ -129,6 +136,12 @@ class SpriteObject {
 		this.SpriteHeight = SpriteGiven.Height
 	}
 }
+
+musicAudio.addEventListener('ended', function() {
+	musicAudio.src = music[RandomNum(0, music.length)];
+	musicAudio.play();
+	console.log('finished music')
+})
 
 class Particle {
 	constructor(density, VerticalSpeed, HorizontalSpeed, ParticleSprite, MaxParticleWidth, MinParticleHeight) {
@@ -360,7 +373,6 @@ function LoadData() {
 	for(i = 0; i < resourceNames.length; i++) {
 		// Loads the resource amount
 		var resourceAmountLoad = localStorage.getItem(resourceNames[i] + "Amount")
-		console.log(resourceAmountLoad)
 		resourceAmounts.push(Number(resourceAmountLoad))
 		// Saves the gather effeciancy of the resource
 		var resourceEfficiencyLoad = localStorage.getItem(resourceNames[i] + "Efficiency")
@@ -524,7 +536,6 @@ function BuyItem(ItemBought) {
 // All of the player input
 document.addEventListener('keyup', function (input) {
 	if(input.key == 't') {
-		console.log("Switched Resource");
 		switchResource();
 	} else if(input.key == "w") {
 		if(CameraVelY == 0) {
@@ -585,21 +596,26 @@ document.addEventListener('keydown', function(input) {
 		} else {
 			CameraZoomScale = newScale
 		}
-		CurrentRenderDistance = Math.round(MinRenderDistance * (MaxZoom - CameraZoomScale))
-		if(CurrentRenderDistance < MinRenderDistance) {
-			CurrentRenderDistance = MinRenderDistance
+		CurrentRenderDistanceWidth = Math.round(MinRenderDistanceWidth * (MaxZoom - CameraZoomScale)) 
+		CurrentRenderDistanceHeight = Math.round(MinRenderDistanceHeight * (MaxZoom - CameraZoomScale))
+
+		if(CurrentRenderDistanceWidth < MinRenderDistanceWidth || CurrentRenderDistanceHeight < MinRenderDistanceHeight) {
+			CurrentRenderDistanceWidth = MinRenderDistanceWidth
+			CurrentRenderDistanceHeight = MinRenderDistanceHeight
 		}
 	} else if(input.key == 'q') {
 		var newScale = CameraZoomScale - 0.1
-		console.log(newScale)
 		if (newScale < MinZoom) {
 			CameraZoomScale = MinZoom
 		} else {
 			CameraZoomScale = newScale
 		}
-		CurrentRenderDistance = Math.round(MinRenderDistance * (MaxZoom - CameraZoomScale))
-		if(CurrentRenderDistance < MinRenderDistance) {
-			CurrentRenderDistance = MinRenderDistance
+		CurrentRenderDistanceWidth = Math.round(MinRenderDistanceWidth * (MaxZoom - CameraZoomScale)) 
+		CurrentRenderDistanceHeight = Math.round(MinRenderDistanceHeight * (MaxZoom - CameraZoomScale))
+
+		if(CurrentRenderDistanceWidth < MinRenderDistanceWidth || CurrentRenderDistanceHeight < MinRenderDistanceHeight) {
+			CurrentRenderDistanceWidth = MinRenderDistanceWidth
+			CurrentRenderDistanceHeight = MinRenderDistanceHeight
 		}
 	}
 }, false);
@@ -629,18 +645,30 @@ canvas.addEventListener('click', function (mouse) {
 function ResizeCanvas() {
 	canvas.width = window.innerWidth *  0.6
 	canvas.height = window.innerHeight * 0.7
+	MinRenderDistanceHeight = (canvas.height / 1.85) * MinZoom;
+	MinRenderDistanceWidth = (canvas.width / 2) * MinZoom;
+	CanvasCenterWidth = canvas.width / 2
+	CanvasCenterHeight = canvas.height / 2
 	ctx.imageSmoothingEnabled = false
 	ctx.translate(canvas.width*0.5,canvas.height*0.5);
 }
 window.onresize = ResizeCanvas
 
+function CheckPlacement() {
+
+}
+
+function ConfirmPlaycement() {
+
+}
+
 function CreateChunks() {
-	for(y = 0; y < 25; y++) {
-		for(x = 0; x < 25; x++) {
-			var NewChunk = new GrassChunk(x * 200, y * 200)
-			var NewChunk2 = new GrassChunk(-x * 200, y * 200)
-			var NewChunk3 = new GrassChunk(-x * 200, -y * 200)
-			var NewChunk4 = new GrassChunk(x * 200, -y * 200)
+	for(y = 0; y < 50; y++) {
+		for(x = 0; x < 50; x++) {
+			var NewChunk = new GrassChunk(x * 199, y * 199)
+			var NewChunk2 = new GrassChunk(-x * 199, y * 199)
+			var NewChunk3 = new GrassChunk(-x * 199, -y * 199)
+			var NewChunk4 = new GrassChunk(x * 199, -y * 199)
 			var NewCoal = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
 			var NewCoal2 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
 			var NewCoal3 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
@@ -680,16 +708,28 @@ function UpdateWorkers() {
 }
 
 function UpdateCamera() {
-	if(CameraVelX != 0) {
+	if(CameraVelX != 0 || CameraVelY != 0) {
 		CameraPosX += CameraVelX
-	}
-	if(CameraVelY != 0) {
 		CameraPosY += CameraVelY
-	}
+		if(Math.abs(CameraPosX) >= MaxCamDistance) {
+			if(CameraPosX < 0) {
+				CameraPosX = -MaxCamDistance
+			} else {
+				CameraPosX = MaxCamDistance
+			}
+		}
+		if(Math.abs(CameraPosY) >= MaxCamDistance) {
+			if(CameraPosY < 0) {
+				CameraPosY = -MaxCamDistance
+			} else {
+				CameraPosY = MaxCamDistance
+			}
+		}
+	} else { return }
 }
 
-for(i = 0; i < 15000; i++) {
-	var NewWorker = new Worker(RandomNum(-3000, 3000), RandomNum(-3000, 3000))
+for(i = 0; i < 50000; i++) {
+	var NewWorker = new Worker(RandomNum(-10000, 10000), RandomNum(-10000, 10000))
 	workers.push(NewWorker)
 }
 
@@ -700,7 +740,7 @@ function FixedUpdate() {
 }
 
 function Update() {
-	ctx.clearRect(0,0, canvas.width, canvas.height)
+	ctx.clearRect(-CanvasCenterWidth,-CanvasCenterHeight, canvas.width, canvas.height)
 	UpdateCamera()
 	UpdateChunks()
 	UpdateWorkers()
@@ -708,7 +748,7 @@ function Update() {
 }
 
   document.onreadystatechange = () => {
-	if (document.readyState === "complete") {
+	if (document.readyState === "interactive") {
 		CheckData()
 		CreateChunks()
 		SetupStatistics()
