@@ -1,11 +1,10 @@
 const statisticContainer = document.getElementById('StatisticsInfo');
 const canvas = document.getElementById('canvas');
-canvas.width = Math.round(window.innerWidth *  0.6);
+canvas.width = Math.round(window.innerWidth *  0.6775);
 canvas.height = Math.round(window.innerHeight * 0.7);
-canvas.style.filter = 'saturate(0.75) hue-rotate(25deg) brightness(25%)';
-//canvas.style.filter = 'saturate(0.75)';
+canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(100%)';
 const ctx = canvas.getContext('2d');
-ctx.translate(canvas.width*0.5,canvas.height*0.5);
+ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2));
 ctx.imageSmoothingEnabled = false;
 var CanvasCenterWidth = canvas.width / 2
 var CanvasCenterHeight = canvas.height / 2
@@ -19,8 +18,8 @@ const CamFasterVel = 10
 var CameraZoomScale = 2
 const MaxZoom = 3;
 const MinZoom = 1;
-var MinRenderDistanceHeight = (canvas.height / 1.85) * MinZoom;
-var MinRenderDistanceWidth = (canvas.width / 2) * MinZoom;
+var MinRenderDistanceHeight = Math.round(canvas.height / 2) * MinZoom;
+var MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
 var CurrentRenderDistanceWidth = MinRenderDistanceWidth;
 var CurrentRenderDistanceHeight = MinRenderDistanceHeight;
 var MaxCamDistance = 9000
@@ -40,8 +39,12 @@ var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_au
 var muteMusic = true;
 musicAudio.loop = false;
 
+var Brightness = 100
 var isDayTime = true;
 var isNightTime = false;
+const DayLabel = document.getElementById('Day')
+const HourLabel = document.getElementById('Hour')
+const MinuteLabel = document.getElementById('Minute')
 var statisticalResourceNames = new Array('Rubles', 'AvailableHousing', 'TotalHousing');
 var statisticalResourceAmounts = new Array();
 
@@ -61,6 +64,12 @@ function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationF
 	} else {
 		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale),Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
 	}
+}
+
+let GameTime = {
+	Minute: 0,
+	Hour: 0,
+	Day: 0,
 }
 
 // Sets up the player states
@@ -211,6 +220,7 @@ class Tent {
 		this.SpriteWidth = this.Sprite.width
 		this.PosX = startX
 		this.PosY = startY
+		console.log(this.SpriteHeight, this.SpriteWidth)
 	}
 
 	DrawChunk() {
@@ -643,14 +653,14 @@ canvas.addEventListener('click', function (mouse) {
 
 // Resizes canvas to fit the actual game
 function ResizeCanvas() {
-	canvas.width = window.innerWidth *  0.6
-	canvas.height = window.innerHeight * 0.7
-	MinRenderDistanceHeight = (canvas.height / 1.85) * MinZoom;
-	MinRenderDistanceWidth = (canvas.width / 2) * MinZoom;
+	canvas.width = Math.round(window.innerWidth *  0.6775)
+	canvas.height = Math.round(window.innerHeight * 0.7)
+	MinRenderDistanceHeight = Math.round(canvas.height / 2) * MinZoom;
+	MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
 	CanvasCenterWidth = canvas.width / 2
 	CanvasCenterHeight = canvas.height / 2
 	ctx.imageSmoothingEnabled = false
-	ctx.translate(canvas.width*0.5,canvas.height*0.5);
+	ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2));
 }
 window.onresize = ResizeCanvas
 
@@ -728,7 +738,7 @@ function UpdateCamera() {
 	} else { return }
 }
 
-for(i = 0; i < 50000; i++) {
+for(i = 0; i < 1000; i++) {
 	var NewWorker = new Worker(RandomNum(-10000, 10000), RandomNum(-10000, 10000))
 	workers.push(NewWorker)
 }
@@ -746,6 +756,29 @@ function Update() {
 	UpdateWorkers()
 	requestAnimationFrame(Update)
 }
+function UpdateGameTime() {
+	GameTime.Minute += 1
+	if(GameTime.Hour >= 20 & Brightness > 30) {
+		Brightness -= 0.4
+		canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(' + Brightness + '%)';
+	} else if(GameTime.Hour >= 3 && GameTime.Hour < 6 && Brightness < 100) {
+		Brightness += 0.4
+		canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(' + Brightness + '%)';
+	}
+	if(GameTime.Minute > 60) {
+		GameTime.Minute = 0
+		GameTime.Hour += 1
+		HourLabel.innerText = GameTime.Hour
+	}
+	if(GameTime.Hour == 24) {
+		GameTime.Hour = 0
+		GameTime.Day += 1
+		DayLabel.innerText = GameTime.Day
+
+	}
+	MinuteLabel.innerText = GameTime.Minute
+
+}
 
   document.onreadystatechange = () => {
 	if (document.readyState === "interactive") {
@@ -760,3 +793,4 @@ function Update() {
 
 addEventListener("selectstart", event => event.preventDefault());
 setInterval(SaveData, SaveWaitTime);
+setInterval(UpdateGameTime, 10)
