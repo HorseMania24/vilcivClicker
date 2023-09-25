@@ -18,7 +18,7 @@ const CamFasterVel = 10
 var CameraZoomScale = 2
 const MaxZoom = 3;
 const MinZoom = 1;
-var MinRenderDistanceHeight = Math.round(canvas.height / 2) * MinZoom;
+var MinRenderDistanceHeight = Math.round(canvas.height / 1.5) * MinZoom;
 var MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
 var CurrentRenderDistanceWidth = MinRenderDistanceWidth;
 var CurrentRenderDistanceHeight = MinRenderDistanceHeight;
@@ -40,8 +40,14 @@ var muteMusic = true;
 musicAudio.loop = false;
 
 var Brightness = 100
+var ColorHue = 0
+var Saturation = 100
 var isDayTime = true;
 var isNightTime = false;
+const DayTimeSound = new Audio('sounds/daytime.mp3')
+DayTimeSound.volume = 0.5
+const NightTimeSound = new Audio('sounds/nighttime.mp3')
+NightTimeSound.volume = 0.5
 const DayLabel = document.getElementById('Day')
 const HourLabel = document.getElementById('Hour')
 const MinuteLabel = document.getElementById('Minute')
@@ -247,7 +253,7 @@ class Worker {
 			AnimationFrames: 8
 		}
 
-		this.CurrentAnimation.src = this.WalkAnimations.Walkdown
+		this.CurrentAnimation.src = this.WalkAnimations.Walkup
 		this.AnimationFrames = this.WalkAnimations.AnimationFrames
 
 		this.WorkerStates = {
@@ -296,14 +302,14 @@ class Worker {
 		}
 	}
 
-	ChangeAnimation() {
-		if(this.Facing == "Down") {
+	ChangeAnimation(Animation) {
+		if(Animation == 'Walkdown') {
 			this.CurrentAnimation.src = this.WalkAnimations.Walkdown
-		} else if(this.Facing == "Down"== 'Up') {
+		} else if(Animation == 'Walkup') {
 			this.CurrentAnimation.src = this.WalkAnimations.Walkup
-		}else if(this.Facing == "Down" == 'Left') {
+		}else if(Animation == 'Walkleft') {
 			this.CurrentAnimation.src = this.WalkAnimations.Walkleft
-		}else if(this.Facing == "Down" == 'Right') {
+		}else if(Animation == 'Walkright') {
 			this.CurrentAnimation.src = this.WalkAnimations.Walkright
 		}
 	}
@@ -543,6 +549,7 @@ function BuyItem(ItemBought) {
 	}
 }
 
+
 // All of the player input
 document.addEventListener('keyup', function (input) {
 	if(input.key == 't') {
@@ -655,7 +662,7 @@ canvas.addEventListener('click', function (mouse) {
 function ResizeCanvas() {
 	canvas.width = Math.round(window.innerWidth *  0.6775)
 	canvas.height = Math.round(window.innerHeight * 0.7)
-	MinRenderDistanceHeight = Math.round(canvas.height / 2) * MinZoom;
+	var MinRenderDistanceHeight = Math.round(canvas.height / 1.5) * MinZoom;
 	MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
 	CanvasCenterWidth = canvas.width / 2
 	CanvasCenterHeight = canvas.height / 2
@@ -738,8 +745,8 @@ function UpdateCamera() {
 	} else { return }
 }
 
-for(i = 0; i < 1000; i++) {
-	var NewWorker = new Worker(RandomNum(-10000, 10000), RandomNum(-10000, 10000))
+for(i = 0; i < 5000; i++) {
+	var NewWorker = new Worker(RandomNum(-500, 500), RandomNum(-500, 500))
 	workers.push(NewWorker)
 }
 
@@ -759,16 +766,35 @@ function Update() {
 function UpdateGameTime() {
 	GameTime.Minute += 1
 	if(GameTime.Hour >= 20 & Brightness > 30) {
-		Brightness -= 0.4
-		canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(' + Brightness + '%)';
+		Brightness -= 1
+		if(ColorHue < 45) {
+			ColorHue += 1
+		}
+		if(Saturation > 75) {
+			Saturation -= 1
+		}
+		canvas.style.filter = 'saturate(' + Saturation + '%) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
 	} else if(GameTime.Hour >= 3 && GameTime.Hour < 6 && Brightness < 100) {
 		Brightness += 0.4
-		canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(' + Brightness + '%)';
+		if(ColorHue > 0) {
+			ColorHue -= 0.4
+		}
+		if(Saturation < 100) {
+			Saturation += 0.2
+		}
+		canvas.style.filter = 'saturate(1) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
 	}
 	if(GameTime.Minute > 60) {
 		GameTime.Minute = 0
 		GameTime.Hour += 1
-		HourLabel.innerText = GameTime.Hour
+		if(GameTime.Hour < 10) {
+			HourLabel.innerText = "0" + GameTime.Hour
+		} else { HourLabel.innerText = GameTime.Hour }
+		if(GameTime.Hour == 22) { 
+			NightTimeSound.play()
+		} else if(GameTime.Hour == 5) {
+			DayTimeSound.play()
+		}
 	}
 	if(GameTime.Hour == 24) {
 		GameTime.Hour = 0
@@ -776,8 +802,9 @@ function UpdateGameTime() {
 		DayLabel.innerText = GameTime.Day
 
 	}
-	MinuteLabel.innerText = GameTime.Minute
-
+	if(GameTime.Minute < 10) {
+		MinuteLabel.innerText = "0" + GameTime.Minute
+	} else { MinuteLabel.innerText = GameTime.Minute }
 }
 
   document.onreadystatechange = () => {
