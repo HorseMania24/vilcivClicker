@@ -1,10 +1,12 @@
 const statisticContainer = document.getElementById('StatisticsInfo');
 const canvas = document.getElementById('canvas');
+const canvasLightLayer = document.createElement('canvas')
 canvas.width = Math.round(window.innerWidth *  0.6775);
 canvas.height = Math.round(window.innerHeight * 0.7);
 canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(100%)';
 const ctx = canvas.getContext('2d');
 ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2));
+canvas.appendChild(canvasLightLayer)
 ctx.imageSmoothingEnabled = false;
 var CanvasCenterWidth = canvas.width / 2
 var CanvasCenterHeight = canvas.height / 2
@@ -12,14 +14,14 @@ var CameraPosX = 0;
 var CameraPosY = 0;
 var CameraVelX = 0;
 var CameraVelY = 0;
-var CamVelocity = 4
-const CamDefaultVel = 4
-const CamFasterVel = 10
+var CamVelocity = 15
+const CamDefaultVel = 50
+const CamFasterVel = 50
 var CameraZoomScale = 2
 const MaxZoom = 3;
 const MinZoom = 1;
-var MinRenderDistanceHeight = Math.round(canvas.height / 1.5) * MinZoom;
-var MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
+var MinRenderDistanceHeight = CanvasCenterHeight * MinZoom;
+var MinRenderDistanceWidth = CanvasCenterWidth * MinZoom;
 var CurrentRenderDistanceWidth = MinRenderDistanceWidth;
 var CurrentRenderDistanceHeight = MinRenderDistanceHeight;
 var MaxCamDistance = 9000
@@ -226,7 +228,6 @@ class Tent {
 		this.SpriteWidth = this.Sprite.width
 		this.PosX = startX
 		this.PosY = startY
-		console.log(this.SpriteHeight, this.SpriteWidth)
 	}
 
 	DrawChunk() {
@@ -646,14 +647,15 @@ document.addEventListener('click', function () {
 function GetMousePosition(input) {
 	var rect = canvas.getBoundingClientRect()
 	return {
-		X: (((input.clientX - rect.left) / CameraZoomScale) - CameraPosX) - (canvas.width / 2 / CameraZoomScale),
-		Y: (((input.clientY - rect.top) / CameraZoomScale) - CameraPosY) - (canvas.height / 2 / CameraZoomScale)
+		X: (((input.clientX - rect.left) / CameraZoomScale) - CameraPosX) - (CanvasCenterWidth / CameraZoomScale),
+		Y: (((input.clientY - rect.top) / CameraZoomScale) - CameraPosY) - (CanvasCenterHeight / CameraZoomScale)
 	}
 }
 
 canvas.addEventListener('click', function (mouse) {
 	var ClickPos = GetMousePosition(mouse)
-	var NewTent = new Tent(ClickPos.X, ClickPos.Y)
+	var NewTent = new Tent(Math.round(ClickPos.X - ((ClickPos.X % (50 / (CameraZoomScale - MinZoom))))), Math.round(ClickPos.Y - ((ClickPos.Y % (50 / (CameraZoomScale - MinZoom))))))
+	console.log()
 	DrawLayer3.push(NewTent)
 }, false)
 
@@ -662,12 +664,12 @@ canvas.addEventListener('click', function (mouse) {
 function ResizeCanvas() {
 	canvas.width = Math.round(window.innerWidth *  0.6775)
 	canvas.height = Math.round(window.innerHeight * 0.7)
-	var MinRenderDistanceHeight = Math.round(canvas.height / 1.5) * MinZoom;
-	MinRenderDistanceWidth = Math.round(canvas.width / 2) * MinZoom;
 	CanvasCenterWidth = canvas.width / 2
 	CanvasCenterHeight = canvas.height / 2
+	MinRenderDistanceHeight = CanvasCenterHeight * MinZoom;
+	MinRenderDistanceWidth = CanvasCenterWidth * MinZoom;
 	ctx.imageSmoothingEnabled = false
-	ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2));
+	ctx.translate(Math.round(CanvasCenterWidth),Math.round(CanvasCenterHeight));
 }
 window.onresize = ResizeCanvas
 
@@ -690,8 +692,8 @@ function CreateChunks() {
 			var NewCoal2 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
 			var NewCoal3 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
 			var NewCoal4 = new CoalVein(RandomNum(-3000,3000), RandomNum(-3000,3000))
-			var NewTree = new PineTree(RandomNum(-1500,1500), RandomNum(-1500,1500))
-			var NewTree2 = new PineTree(RandomNum(-1500,1500), RandomNum(-1500,1500))
+			var NewTree = new PineTree(RandomNum(-3000,3000), RandomNum(-3000,3000))
+			var NewTree2 = new PineTree(RandomNum(-3000,3000), RandomNum(-3000,3000))
 			DrawLayer1.push(NewChunk)
 			DrawLayer1.push(NewChunk2)
 			DrawLayer1.push(NewChunk3)
@@ -702,6 +704,13 @@ function CreateChunks() {
 			DrawLayer2.push(NewCoal4)
 			DrawLayer3.push(NewTree)
 			DrawLayer3.push(NewTree2)
+
+			DrawLayer3.sort(function(a, b) {
+				return a.PosY - b.PosY
+			})
+			DrawLayer2.sort(function(a, b) {
+				return a.PosY - b.PosY
+			})
 		}
 	}
 
@@ -745,9 +754,12 @@ function UpdateCamera() {
 	} else { return }
 }
 
-for(i = 0; i < 5000; i++) {
-	var NewWorker = new Worker(RandomNum(-500, 500), RandomNum(-500, 500))
-	workers.push(NewWorker)
+
+function CreateWorkers() {
+	for(i = 0; i < 5000; i++) {
+		var NewWorker = new Worker(RandomNum(-500, 500), RandomNum(-500, 500))
+		workers.push(NewWorker)
+	}
 }
 
 function FixedUpdate() {
@@ -775,12 +787,12 @@ function UpdateGameTime() {
 		}
 		canvas.style.filter = 'saturate(' + Saturation + '%) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
 	} else if(GameTime.Hour >= 3 && GameTime.Hour < 6 && Brightness < 100) {
-		Brightness += 0.4
+		Brightness += 1
 		if(ColorHue > 0) {
-			ColorHue -= 0.4
+			ColorHue -= 1
 		}
 		if(Saturation < 100) {
-			Saturation += 0.2
+			Saturation += 0.4
 		}
 		canvas.style.filter = 'saturate(1) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
 	}
@@ -807,17 +819,17 @@ function UpdateGameTime() {
 	} else { MinuteLabel.innerText = GameTime.Minute }
 }
 
-  document.onreadystatechange = () => {
-	if (document.readyState === "interactive") {
-		CheckData()
-		CreateChunks()
-		SetupStatistics()
-		SetupKeybinds()
-		setInterval(FixedUpdate, 100)
-		Update();
-	}
-  };
+  window.addEventListener('load',function() {
+	CheckData()
+	SetupStatistics()
+	SetupKeybinds()
+	CreateChunks()
+	//CreateWorkers()
+	setInterval(FixedUpdate, 100)
+	Update();
+	setInterval(SaveData, SaveWaitTime);
+	setInterval(UpdateGameTime, 500)
+	console.log(typeof workers[1])
+  })
 
 addEventListener("selectstart", event => event.preventDefault());
-setInterval(SaveData, SaveWaitTime);
-setInterval(UpdateGameTime, 10)
