@@ -1,75 +1,79 @@
-const statisticContainer = document.getElementById('StatisticsInfo');
-const canvas = document.getElementById('canvas');
-const canvasLightLayer = document.createElement('canvas')
-canvas.width = Math.round(window.innerWidth *  0.6775);
-canvas.height = Math.round(window.innerHeight * 0.7);
-canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(100%)';
-const ctx = canvas.getContext('2d');
-ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2));
-canvas.appendChild(canvasLightLayer)
-ctx.imageSmoothingEnabled = false;
-var CanvasCenterWidth = canvas.width / 2
-var CanvasCenterHeight = canvas.height / 2
-var CameraPosX = 0;
-var CameraPosY = 0;
-var CameraVelX = 0;
-var CameraVelY = 0;
-var CamVelocity = 15
-const CamDefaultVel = 50
-const CamFasterVel = 50
-var CameraZoomScale = 2
-const MaxZoom = 3;
-const MinZoom = 1;
-var MinRenderDistanceHeight = CanvasCenterHeight * MinZoom;
-var MinRenderDistanceWidth = CanvasCenterWidth * MinZoom;
-var CurrentRenderDistanceWidth = MinRenderDistanceWidth;
-var CurrentRenderDistanceHeight = MinRenderDistanceHeight;
-var MaxCamDistance = 9000
-const MinRenderDistance = 400;
+const statisticContainer = document.getElementById('StatisticsInfo') 
+const canvas = document.getElementById('canvas')
+canvas.width = Math.round(window.innerWidth *  0.6775) 
+canvas.height = Math.round(window.innerHeight * 0.7) 
+canvas.style.filter = 'saturate(1) hue-rotate(0deg) brightness(100%)' 
+const ctx = canvas.getContext('2d') 
+ctx.translate(Math.round(canvas.width/2),Math.round(canvas.height/2)) 
+const canvasLightLayer = document.createElement('canvas') 
+canvasLightLayer.id = "LightLayer"
+document.body.appendChild(canvasLightLayer) 
+canvasLightLayer.width = canvas.width
+canvasLightLayer.height = canvas.height
+ctx.imageSmoothingEnabled = false 
+var CanvasCenterWidth = canvas.width * 0.5
+var CanvasCenterHeight = canvas.height * 0.5
+var CameraPosX = 0 
+var CameraPosY = 0 
+var CameraVelX = 0 
+var CameraVelY = 0 
+var CamVelocity = 15 
+const CamDefaultVel = 50 
+const CamFasterVel = 50 
+var CameraZoomScale = 2 
+const MaxZoom = 3 
+const MinZoom = 0.5
+var MinRenderDistanceHeight = (canvas.height * 0.8)
+var MinRenderDistanceWidth = CanvasCenterWidth
+var CurrentRenderDistanceWidth = MinRenderDistanceWidth 
+var CurrentRenderDistanceHeight = MinRenderDistanceHeight 
+var MaxCamDistance = 9000 
+const MinRenderDistance = 400 
 
-const failed_transaction = new Audio('sounds/insufficient_funds.mp3');
-const valid_transaction = new Audio('sounds/valid_funds.mp3');
-const click_sound = new Audio('sounds/mouse_click.mp3');
-click_sound.volume = 0.1;
+const failed_transaction = new Audio('sounds/insufficient_funds.mp3') 
+const valid_transaction = new Audio('sounds/valid_funds.mp3') 
+const click_sound = new Audio('sounds/mouse_click.mp3') 
+click_sound.volume = 0.1 
 
-var HitAudio = new Audio();
-const woodHitVariations = new Array('sounds/Hits/WoodHit1.mp3', 'sounds/Hits/WoodHit2.mp3', 'sounds/Hits/WoodHit3.mp3', 'sounds/Hits/WoodHit4.mp3', 'sounds/Hits/WoodHit5.mp3');
-const coalHitVariations = new Array('sounds/Hits/CoalHit1.mp3', 'sounds/Hits/CoalHit2.mp3');
-var musicAudio = new Audio();
-musicAudio.volume = 0;
-var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3', 'music/vc_home.mp3');
-var muteMusic = true;
-musicAudio.loop = false;
+var HitAudio = new Audio() 
+const woodHitVariations = new Array('sounds/Hits/WoodHit1.mp3', 'sounds/Hits/WoodHit2.mp3', 'sounds/Hits/WoodHit3.mp3', 'sounds/Hits/WoodHit4.mp3', 'sounds/Hits/WoodHit5.mp3') 
+const coalHitVariations = new Array('sounds/Hits/CoalHit1.mp3', 'sounds/Hits/CoalHit2.mp3') 
+var musicAudio = new Audio() 
+musicAudio.volume = 0 
+var music = new Array('music/day_time.mp3', 'music/ice_cavern.mp3','music/osr_autumn.mp3','music/osr_forest.mp3','music/osr_harmony.mp3','music/osr_newbie.mp3','music/osr_start.mp3','music/osr_stillnight.mp3','music/osr_venture.mp3', 'music/vc_home.mp3') 
+var muteMusic = true 
+musicAudio.loop = false 
 
-var Brightness = 100
-var ColorHue = 0
-var Saturation = 100
-var isDayTime = true;
-var isNightTime = false;
-const DayTimeSound = new Audio('sounds/daytime.mp3')
-DayTimeSound.volume = 0.5
-const NightTimeSound = new Audio('sounds/nighttime.mp3')
-NightTimeSound.volume = 0.5
-const DayLabel = document.getElementById('Day')
-const HourLabel = document.getElementById('Hour')
-const MinuteLabel = document.getElementById('Minute')
-var statisticalResourceNames = new Array('Rubles', 'AvailableHousing', 'TotalHousing');
-var statisticalResourceAmounts = new Array();
+var Brightness = 100 
+var ColorHue = 0 
+var Saturation = 100 
+var isDayTime = true 
+var isNightTime = false 
+const DayTimeSound = new Audio('sounds/daytime.mp3') 
+DayTimeSound.volume = 0.5 
+const NightTimeSound = new Audio('sounds/nighttime.mp3') 
+NightTimeSound.volume = 0.5 
+const DayLabel = document.getElementById('Day') 
+const HourLabel = document.getElementById('Hour') 
+const MinuteLabel = document.getElementById('Minute') 
+var statisticalResourceNames = new Array('Rubles', 'AvailableHousing', 'TotalHousing') 
+var statisticalResourceAmounts = new Array() 
 
-var resourceNames = new Array("Wood", "Coal", "Lumber");
-var resourceAmounts = new Array();
-var resourceEfficiency = new Array();
-var resourceOptionIndex = 0;
-var workers = new Array();
-var DrawLayer1 = new Array()
-var DrawLayer2 = new Array()
-var DrawLayer3 = new Array()
-var SaveWaitTime = 30000;
+var resourceNames = new Array("Wood", "Coal", "Lumber") 
+var resourceAmounts = new Array() 
+var resourceEfficiency = new Array() 
+var resourceOptionIndex = 0 
+var workers = new Array() 
+var DrawLayer1 = new Array() 
+var DrawLayer2 = new Array() 
+var DrawLayer3 = new Array() 
+var SaveWaitTime = 30000 
+
+var CurrentQuadtree = null
+var VisualizeQuadtree = false
 
 function Draw(SpriteRendering, PosX, PosY, SpriteWidth, SpriteHeight, AnimationFrame) {
-	if(Math.abs(CameraPosX + PosX) > CurrentRenderDistanceWidth || Math.abs(CameraPosY + PosY) > CurrentRenderDistanceHeight) {
-		return
-	} else {
+	if(Math.abs(CameraPosX + PosX) < CurrentRenderDistanceWidth || Math.abs(CameraPosY + PosY) < CurrentRenderDistanceHeight) {
 		ctx.drawImage(SpriteRendering, (SpriteWidth * AnimationFrame) - SpriteWidth, 0, SpriteWidth, SpriteHeight, Math.round((PosX + CameraPosX) * CameraZoomScale),Math.round((PosY + CameraPosY) * CameraZoomScale), SpriteWidth * CameraZoomScale, SpriteHeight * CameraZoomScale)
 	}
 }
@@ -85,7 +89,7 @@ const PlayerStates = {
 	None: "None",
 	Placing: "Placing"
 }
-var CurrentPlayerState = PlayerStates.None
+var CurrentPlayerState = PlayerStates.None 
 
 // Where we store keybinds
 let KeybindsConfig = [
@@ -140,35 +144,35 @@ let ShopItems = [
 	}
 ]
 
-const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry', 'Robert','Nair','Sloe','Kai','Ronald','Richard','Ulysis')
-const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda', 'Keesha', 'Roe', 'Jessica', 'Marline', 'Molly')
-const LastNames = new Array('Smith', 'Coal', 'Roe')
+const MaleFirstNames = new Array('Joe', 'Bob', 'Horse', 'Jerry', 'Robert','Nair','Sloe','Kai','Ronald','Richard','Ulysis') 
+const FemaleFirstnames = new Array('Rebecca', 'Emily', 'Rowanda', 'Keesha', 'Roe', 'Jessica', 'Marline', 'Molly') 
+const LastNames = new Array('Smith', 'Coal', 'Roe') 
 
 class SpriteObject {
 	constructor(startX, startY, SpriteGiven, Width, Height) {
-		this.PosX = startX
-		this.PosY = startY
-		this.Sprite = SpriteGiven
-		this.SpriteWidth = SpriteGiven.Width
-		this.SpriteHeight = SpriteGiven.Height
+		this.PosX = startX 
+		this.PosY = startY 
+		this.Sprite = SpriteGiven 
+		this.SpriteWidth = SpriteGiven.Width 
+		this.SpriteHeight = SpriteGiven.Height 
 	}
 }
 
 musicAudio.addEventListener('ended', function() {
-	musicAudio.src = music[RandomNum(0, music.length)];
-	musicAudio.play();
-	console.log('finished music')
+	musicAudio.src = music[RandomNum(0, music.length)] 
+	musicAudio.play() 
+	console.log('finished music') 
 })
 
 class Particle {
 	constructor(density, VerticalSpeed, HorizontalSpeed, ParticleSprite, MaxParticleWidth, MinParticleHeight) {
-		this.ParticleAmount = density
-		this.SpeedX = HorizontalSpeed
-		this.SpeedY = VerticalSpeed
-		this.SizeX = ParticleWidth
-		this.SizeY = ParticleHeight
-		this.ParticleAmount = density
-		this.ParticleContainer = new Array()
+		this.ParticleAmount = density 
+		this.SpeedX = HorizontalSpeed 
+		this.SpeedY = VerticalSpeed 
+		this.SizeX = ParticleWidth 
+		this.SizeY = ParticleHeight 
+		this.ParticleAmount = density 
+		this.ParticleContainer = new Array() 
 		for(i = 0; i < this.ParticleAmount; i++) {
 
 		}
@@ -177,12 +181,12 @@ class Particle {
 
 class GrassChunk {
 	constructor(startX, startY) {
-		this.Sprite = new Image()
-		this.Sprite.src = 'sprites/World/GrassChunk.png'
-		this.SpriteHeight = this.Sprite.height
-		this.SpriteWidth = this.Sprite.width
-		this.PosX = startX
-		this.PosY = startY
+		this.Sprite = new Image() 
+		this.Sprite.src = 'sprites/World/GrassChunk.png' 
+		this.SpriteHeight = this.Sprite.height 
+		this.SpriteWidth = this.Sprite.width 
+		this.PosX = startX 
+		this.PosY = startY 
 	}
 
 	DrawChunk() {
@@ -333,7 +337,7 @@ var Keybinds = new Array()
 var KeybindDescriptions = new Array()
 
 function RandomNum(min, max) {
-	return Math.floor(Math.random() * (max - min) + min);
+	return Math.floor(Math.random() * (max - min) + min)
 }
 
 function CloseWindow(WindowClosing) {
@@ -365,13 +369,24 @@ function EaseOutAudio(AudioSource, volume) {
 			if (currentVolume <= 0) {
 				currentVolume = 0
 				AudioSource.volume = currentVolume
-				AudioSource.pause();
+				AudioSource.pause() 
 			} else {
 				AudioSource.volume = currentVolume
 				EaseOutAudio(AudioSource, currentVolume)
 			}
 		}
 	}, 10)
+}
+
+function SetupQuadtree() {
+	let newBoundary = new Rectangle(-CanvasCenterWidth,-CanvasCenterHeight,canvas.width,canvas.height)
+	let newQuadtree = new Quadtree(newBoundary)
+	CurrentQuadtree = newQuadtree
+	console.log(newQuadtree)
+	for (let i = 0; i < 1500; i++) {
+		let newPoint = new Point(RandomNum(-CanvasCenterWidth, CanvasCenterWidth), RandomNum(-CanvasCenterHeight, CanvasCenterHeight))
+		newQuadtree.InsertPoint(newPoint)
+	}
 }
 
 function SaveData() {
@@ -470,41 +485,41 @@ function SetupStatistics() {
 
 function MusicManager() {
 	if(muteMusic == true) {
-		musicAudio.src = music[RandomNum(0, music.length)];
-		musicAudio.play();
+		musicAudio.src = music[RandomNum(0, music.length)] 
+		musicAudio.play() 
 		EaseInAudio(musicAudio, 0)
-		muteMusic = false;
+		muteMusic = false 
 		document.getElementById('musicButton').innerHTML = "Music: On"
 	} else if(muteMusic == false) {
 		EaseOutAudio(musicAudio, musicAudio.volume)
-		muteMusic = true;
+		muteMusic = true 
 		document.getElementById('musicButton').innerHTML = "Music: Off"
 	}
 }
 
 function resourceClicker() {
 	if(resourceOptionIndex == 0) {
-		HitAudio.src = woodHitVariations[RandomNum(0, woodHitVariations.length)];
-		HitAudio.play();
+		HitAudio.src = woodHitVariations[RandomNum(0, woodHitVariations.length)] 
+		HitAudio.play() 
 	} else if(resourceOptionIndex == 1) {
-		HitAudio.src = coalHitVariations[RandomNum(0, coalHitVariations.length)];
-		HitAudio.play();
+		HitAudio.src = coalHitVariations[RandomNum(0, coalHitVariations.length)] 
+		HitAudio.play() 
 	}
 	resourceAmounts[resourceOptionIndex] += resourceEfficiency[resourceOptionIndex]
-	document.getElementById(resourceNames[resourceOptionIndex]).innerHTML = resourceNames[resourceOptionIndex] + " : " + resourceAmounts[resourceOptionIndex];
+	document.getElementById(resourceNames[resourceOptionIndex]).innerHTML = resourceNames[resourceOptionIndex] + " : " + resourceAmounts[resourceOptionIndex] 
 }
 
 function switchResource() {
-	resourceOptionIndex += 1;
+	resourceOptionIndex += 1 
 	if(resourceOptionIndex >= resourceNames.length) {
 		resourceOptionIndex = 0
 	}
-	document.getElementById('CurrentResource').innerHTML = resourceNames[resourceOptionIndex];
-	document.getElementById('ResourceEfficiency').innerHTML = resourceEfficiency[resourceOptionIndex];
+	document.getElementById('CurrentResource').innerHTML = resourceNames[resourceOptionIndex] 
+	document.getElementById('ResourceEfficiency').innerHTML = resourceEfficiency[resourceOptionIndex] 
 }
 
 function BuyItem(ItemBought) {
-	var ItemObject = ShopItems.filter(obj => obj.ItemName === ItemBought)[0];
+	var ItemObject = ShopItems.filter(obj => obj.ItemName === ItemBought)[0] 
 	var CanBuy = true
 	for(i = 0; i < ItemObject.ResourcesList.length; i++) {
 		if (CanBuy == false) {
@@ -535,12 +550,12 @@ function BuyItem(ItemBought) {
 			if (ResourceSubtracted != null) {
 				var ResourceSubtractedIndex = resourceNames.indexOf(ResourceSubtracted)
 				resourceAmounts[ResourceSubtractedIndex] -= ItemObject.ResourceAmounts[i]
-				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = resourceNames[ResourceSubtractedIndex] + " : " + resourceAmounts[ResourceSubtractedIndex];
+				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = resourceNames[ResourceSubtractedIndex] + " : " + resourceAmounts[ResourceSubtractedIndex] 
 			} else if(ResourceSubtracted == null) {
 				ResourceSubtracted = statisticalResourceNames.find((resourceFound) => resourceFound == ItemObject.ResourcesList[i])
 				var ResourceAmountIndex = statisticalResourceNames.indexOf(ResourceSubtracted)
 				statisticalResourceAmounts[ResourceAmountIndex] -= ItemObject.ResourceAmounts[i]
-				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = statisticalResourceNames[ResourceSubtractedIndex] + " : " + statisticalResourceAmounts[ResourceSubtractedIndex];
+				document.getElementById(resourceNames[ResourceSubtractedIndex]).innerHTML = statisticalResourceNames[ResourceSubtractedIndex] + " : " + statisticalResourceAmounts[ResourceSubtractedIndex] 
 
 			}
 		}
@@ -554,7 +569,7 @@ function BuyItem(ItemBought) {
 // All of the player input
 document.addEventListener('keyup', function (input) {
 	if(input.key == 't') {
-		switchResource();
+		switchResource() 
 	} else if(input.key == "w") {
 		if(CameraVelY == 0) {
 			CameraVelY = -CamVelocity
@@ -579,8 +594,12 @@ document.addEventListener('keyup', function (input) {
 		} else {
 			CameraVelX = 0
 		}
+	} else if(input.key == 'p') {
+		if(!VisualizeQuadtree) { VisualizeQuadtree = true } else {
+			VisualizeQuadtree = false
+		}
 	}
-}, false);
+}, false) 
 
 document.addEventListener('keydown', function(input) {
 	if(input.key == "w") {
@@ -608,7 +627,7 @@ document.addEventListener('keydown', function(input) {
 			CameraVelX = -CamVelocity
 		}
 	} else if(input.key == 'e') {
-		var newScale = CameraZoomScale + 0.1
+		var newScale = CameraZoomScale + 0.15
 		if (newScale > MaxZoom) {
 			CameraZoomScale = MaxZoom
 		} else {
@@ -622,7 +641,7 @@ document.addEventListener('keydown', function(input) {
 			CurrentRenderDistanceHeight = MinRenderDistanceHeight
 		}
 	} else if(input.key == 'q') {
-		var newScale = CameraZoomScale - 0.1
+		var newScale = CameraZoomScale - 0.15
 		if (newScale < MinZoom) {
 			CameraZoomScale = MinZoom
 		} else {
@@ -635,13 +654,13 @@ document.addEventListener('keydown', function(input) {
 			CurrentRenderDistanceWidth = MinRenderDistanceWidth
 			CurrentRenderDistanceHeight = MinRenderDistanceHeight
 		}
-	}
-}, false);
+	} 
+}, false) 
 
 // Plays a click sound when mouse clicks
 document.addEventListener('click', function () {
-	click_sound.currentTime = 0;
-	click_sound.play();
+	click_sound.currentTime = 0 
+	click_sound.play() 
 }, false)
 
 function GetMousePosition(input) {
@@ -666,10 +685,10 @@ function ResizeCanvas() {
 	canvas.height = Math.round(window.innerHeight * 0.7)
 	CanvasCenterWidth = canvas.width / 2
 	CanvasCenterHeight = canvas.height / 2
-	MinRenderDistanceHeight = CanvasCenterHeight * MinZoom;
-	MinRenderDistanceWidth = CanvasCenterWidth * MinZoom;
+	MinRenderDistanceHeight = CanvasCenterHeight
+	MinRenderDistanceWidth = CanvasCenterWidth 
 	ctx.imageSmoothingEnabled = false
-	ctx.translate(Math.round(CanvasCenterWidth),Math.round(CanvasCenterHeight));
+	ctx.translate(Math.round(CanvasCenterWidth),Math.round(CanvasCenterHeight)) 
 }
 window.onresize = ResizeCanvas
 
@@ -757,7 +776,7 @@ function UpdateCamera() {
 
 function CreateWorkers() {
 	for(i = 0; i < 5000; i++) {
-		var NewWorker = new Worker(RandomNum(-500, 500), RandomNum(-500, 500))
+		var NewWorker = new Worker(RandomNum(-1000, 1000), RandomNum(-1000, 1000))
 		workers.push(NewWorker)
 	}
 }
@@ -773,6 +792,9 @@ function Update() {
 	UpdateCamera()
 	UpdateChunks()
 	UpdateWorkers()
+	if (VisualizeQuadtree) {
+		CurrentQuadtree.ShowQuad()
+	}
 	requestAnimationFrame(Update)
 }
 function UpdateGameTime() {
@@ -785,7 +807,7 @@ function UpdateGameTime() {
 		if(Saturation > 75) {
 			Saturation -= 1
 		}
-		canvas.style.filter = 'saturate(' + Saturation + '%) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
+		canvas.style.filter = 'saturate(' + Saturation + '%) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)' 
 	} else if(GameTime.Hour >= 3 && GameTime.Hour < 6 && Brightness < 100) {
 		Brightness += 1
 		if(ColorHue > 0) {
@@ -794,7 +816,7 @@ function UpdateGameTime() {
 		if(Saturation < 100) {
 			Saturation += 0.4
 		}
-		canvas.style.filter = 'saturate(1) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)';
+		canvas.style.filter = 'saturate(1) hue-rotate(' + ColorHue + 'deg) brightness(' + Brightness + '%)' 
 	}
 	if(GameTime.Minute > 60) {
 		GameTime.Minute = 0
@@ -820,16 +842,16 @@ function UpdateGameTime() {
 }
 
   window.addEventListener('load',function() {
+	SetupQuadtree()
 	CheckData()
 	SetupStatistics()
 	SetupKeybinds()
 	CreateChunks()
-	//CreateWorkers()
+	CreateWorkers()
 	setInterval(FixedUpdate, 100)
-	Update();
-	setInterval(SaveData, SaveWaitTime);
-	setInterval(UpdateGameTime, 500)
-	console.log(typeof workers[1])
+	setInterval(SaveData, SaveWaitTime) 
+	setInterval(UpdateGameTime, 250)
+	Update() 
   })
 
-addEventListener("selectstart", event => event.preventDefault());
+addEventListener("selectstart", event => event.preventDefault()) 
