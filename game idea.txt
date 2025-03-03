@@ -3,8 +3,8 @@ You start buy clicking until you can start building tents,
 You can buy worker slots, but you can only spawn in a worker if you have
 a living space for them, so for 1 tent, you can house 2 workers,
 
-You start off buy building spaces for the villagers to live,
-and they can mine coal, and wood, which eventually you will be able to
-upgrade your villagers buy buying a campire for each building to proccess lumber, which then can be sold for rubles(money),
-Once your villagers can start proccessing lumber, you can start making money to then upgrade your villagers tents with campires, to
-huts with campires, which will make them more effeciant at everything they do.
+You start off by specifying spaces for the villagers to live,
+they can mine coal, wood, and you'll eventually will be able to
+upgrade your villagers by upgrading their living spaces to start proccessing lumber, which then can be sold for rubles(money),
+Once your villagers can start proccessing lumber, you can start making money to then upgrade your villagers to tents with campfires, to then
+huts with campfires, which will make them more efficiant at everything they do.
