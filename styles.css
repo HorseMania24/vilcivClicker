@@ -197,7 +197,7 @@ body {
     align-items: center;
     background: #c3c7cb;
     border: #868a8e 0.2vw solid;
-    z-index: 1;
+    z-index: 5;
     overflow-x: hidden;
 }
 
